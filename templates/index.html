@@ -1,0 +1,27 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>DB Connection Test</title>
+    <style>
+      body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding: 40px; }
+      .ok { color: green; }
+      .bad { color: darkred; }
+      .box { border: 1px solid #ddd; padding: 20px; border-radius: 8px; max-width: 800px; }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>MySQL connection test</h1>
+      {% if ok %}
+        <p class="ok"><strong>Connection worked ✅</strong></p>
+      {% else %}
+        <p class="bad"><strong>Connection failed ❌</strong></p>
+      {% endif %}
+      <p>{{ message }}</p>
+      <hr/>
+      <p>Notes: host={{ config.DB_HOST if config else '127.0.0.1' }} — DB name: testdb</p>
+    </div>
+  </body>
+</html>
