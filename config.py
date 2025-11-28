@@ -1,16 +1,13 @@
 # config.py
-# Optional note: your MySQL Workbench connection/profile is named "IDB" (for your reference).
-# This module exposes a helper to get a connection to your local MySQL server.
 
 import os
-# Optionally load from .env if you want
 from dotenv import load_dotenv
 load_dotenv()
 
 DB_HOST = os.getenv('DB_HOST', '127.0.0.1')
 DB_PORT = int(os.getenv('DB_PORT', 3306))
-DB_USER = os.getenv('DB_USER', 'root')       # <-- REPLACE with your MySQL username (locally is root)
-DB_PASSWORD = os.getenv('DB_PASSWORD', '')  # <-- REPLACE with  password
+DB_USER = os.getenv('DB_USER', 'bob')       # <-- REPLACE with your MySQL username (locally is root)
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'bobbobbody')  # <-- REPLACE with  password
 DB_NAME = os.getenv('DB_NAME', 'testdb')          # <-- 'testdb' as you said
 
 def get_db_connection():

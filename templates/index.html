@@ -3,25 +3,29 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>DB Connection Test</title>
-    <style>
-      body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding: 40px; }
-      .ok { color: green; }
-      .bad { color: darkred; }
-      .box { border: 1px solid #ddd; padding: 20px; border-radius: 8px; max-width: 800px; }
-    </style>
+    <title>index</title>
+    <!-- JetBrains Mono (Bold) (font from the figma) -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
-    <div class="box">
-      <h1>MySQL connection test</h1>
-      {% if ok %}
-        <p class="ok"><strong>Connection worked ✅</strong></p>
-      {% else %}
-        <p class="bad"><strong>Connection failed ❌</strong></p>
-      {% endif %}
-      <p>{{ message }}</p>
-      <hr/>
-      <p>Notes: host={{ config.DB_HOST if config else '127.0.0.1' }} — DB name: testdb</p>
-    </div>
+    <header class="site-header" role="banner">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+
+      <h1 class="site-title">University Manager</h1>
+
+      <nav class="tab-row" role="navigation" aria-label="primary">
+        <button class="tab" aria-label="Page 1">PAGE</button>
+        <button class="tab" aria-label="Page 2">PAGE</button>
+        <button class="tab" aria-label="Page 3">PAGE</button>
+      </nav>
+    </header>
+
+    <main class="page-body">
+      <p style="text-align:center; color:#333; margin-top:80px;">Goofy ah content here...</p>
+    </main>
   </body>
 </html>
