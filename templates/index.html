@@ -1,0 +1,31 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>index</title>
+    <!-- JetBrains Mono (Bold) (font from the figma) -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <header class="site-header" role="banner">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+
+      <h1 class="site-title">University Manager</h1>
+
+      <nav class="tab-row" role="navigation" aria-label="primary">
+        <button class="tab" aria-label="Page 1">PAGE</button>
+        <button class="tab" aria-label="Page 2">PAGE</button>
+        <button class="tab" aria-label="Page 3">PAGE</button>
+      </nav>
+    </header>
+
+    <main class="page-body">
+      <p style="text-align:center; color:#333; margin-top:80px;">Goofy ah content here...</p>
+    </main>
+  </body>
+</html>
