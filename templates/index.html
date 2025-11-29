@@ -17,15 +17,29 @@
 
       <h1 class="site-title">University Manager</h1>
 
-      <nav class="tab-row" role="navigation" aria-label="primary">
+      <!-- <nav class="tab-row" role="navigation" aria-label="primary">
         <button class="tab" aria-label="Page 1">PAGE</button>
         <button class="tab" aria-label="Page 2">PAGE</button>
         <button class="tab" aria-label="Page 3">PAGE</button>
-      </nav>
+      </nav> -->
     </header>
 
     <main class="page-body">
-      <p style="text-align:center; color:#333; margin-top:80px;">Goofy ah content here...</p>
+      
+      <form method="POST" action="{{ url_for('login') }}">
+        <div>
+          <label for="email">Email:</label>
+          <input type="text" id="email" name="email" required />
+        </div>
+
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" minlength="1" required />
+        </div>
+
+        <input type="submit" value="Sign in" />
+      </form>
+
     </main>
   </body>
 </html>
