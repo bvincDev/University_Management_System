@@ -18,22 +18,22 @@ INSERT INTO Department (departmentID, department_name, buildingID) VALUES
 (8, 'Music', 5);
 
 INSERT INTO Admin (adminID, first_name, last_name, email, password) VALUES
-(1, 'ADMIN', 'ADMIN', 'ADMIN@university.edu', 'adminpass1');
+(1, 'John', 'Smith', 'jsmith.@ADMIN.university.edu', 'adminpass1');
 
 
 INSERT INTO Instructor (instructorID, first_name, last_name, email, password, birth_date, departmentID) VALUES
-(1, 'Alice', 'Smith', 'alice.smith@university.edu', 'instrpass1', '1980-04-12', 1),
-(2, 'Bob', 'Johnson', 'bob.johnson@university.edu', 'instrpass2', '1975-09-03', 1),
-(3, 'Carol', 'Lee', 'carol.lee@university.edu', 'instrpass3', '1982-01-27', 2),
-(4, 'David', 'Kim', 'david.kim@university.edu', 'instrpass4', '1978-06-15', 3),
-(5, 'Eva', 'Martinez', 'eva.martinez@university.edu', 'instrpass5', '1985-11-02', 4),
-(6, 'Frank', 'Brown', 'frank.brown@university.edu', 'instrpass6', '1972-03-21', 5),
-(7, 'Gina', 'Davis', 'gina.davis@university.edu', 'instrpass7', '1986-08-09', 6),
-(8, 'Henry', 'Wilson', 'henry.wilson@university.edu', 'instrpass8', '1979-05-30', 7),
-(9, 'Irene', 'Clark', 'irene.clark@university.edu', 'instrpass9', '1988-12-11', 8),
-(10, 'Jack', 'Miller', 'jack.miller@university.edu', 'instrpass10', '1981-02-04', 1),
-(11, 'Karen', 'Garcia', 'karen.garcia@university.edu', 'instrpass11', '1976-07-19', 2),
-(12, 'Liam', 'Anderson', 'liam.anderson@university.edu', 'instrpass12', '1983-10-25', 1);
+(1, 'Alice', 'Smith', 'asmith@student.university.edu', 'instrpass1', '1980-04-12', 1),
+(2, 'Bob', 'Johnson', 'bjohnson@student.university.edu', 'instrpass2', '1975-09-03', 1),
+(3, 'Carol', 'Lee', 'clee@student.university.edu', 'instrpass3', '1982-01-27', 2),
+(4, 'David', 'Kim', 'dkim@student.university.edu', 'instrpass4', '1978-06-15', 3),
+(5, 'Eva', 'Martinez', 'emartinez@student.university.edu', 'instrpass5', '1985-11-02', 4),
+(6, 'Frank', 'Brown', 'fbrown@student.university.edu', 'instrpass6', '1972-03-21', 5),
+(7, 'Gina', 'Davis', 'gavis@student.university.edu', 'instrpass7', '1986-08-09', 6),
+(8, 'Henry', 'Wilson', 'hwilson@student.university.edu', 'instrpass8', '1979-05-30', 7),
+(9, 'Irene', 'Clark', 'iclark@student.university.edu', 'instrpass9', '1988-12-11', 8),
+(10, 'Jack', 'Miller', 'jmiller@student.university.edu', 'instrpass10', '1981-02-04', 1),
+(11, 'Karen', 'Garcia', 'kgarcia@student.university.edu', 'instrpass11', '1976-07-19', 2),
+(12, 'Liam', 'Anderson', 'landerson@student.university.edu', 'instrpass12', '1983-10-25', 1);
 
 
 INSERT INTO Course (courseID, course_name, course_number, credits, departmentID) VALUES
@@ -113,7 +113,7 @@ INSERT INTO Section (sectionID, semester, year, courseID, instructorID, classroo
 (20, 'Spring', 2026, 15,  1,  2, 10, 25);
 
 INSERT INTO Student (studentID, first_name, last_name, email, password, birth_date, year, term, standing, major) VALUES
-(1, 'Noah', 'Adams', 'noah.adams@university.edu', 'studpass1', '2003-05-14', 2, 'Fall', 'Sophomore', 'Computer Science'),
+(1, 'Noah', 'Adams', 'noah.adams@instructor.university.edu', 'studpass1', '2003-05-14', 2, 'Fall', 'Sophomore', 'Computer Science'),
 (2, 'Emma', 'Baker', 'emma.baker@university.edu', 'studpass2', '2002-10-02', 3, 'Fall', 'Junior', 'Mathematics'),
 (3, 'Liam', 'Carter', 'liam.carter@university.edu', 'studpass3', '2004-03-11', 1, 'Fall', 'Freshman', 'Biology'),
 (4, 'Olivia', 'Diaz', 'olivia.diaz@university.edu', 'studpass4', '2001-08-20', 4, 'Fall', 'Senior', 'English'),
