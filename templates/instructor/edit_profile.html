@@ -1,0 +1,33 @@
+<!-- templates/instructor/edit_profile.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1><div class="tab-row"><div class="portal-pill">Instructor Portal</div></div></header>
+  <main class="page-body">
+    <div style="max-width:600px;margin:0 auto;">
+      <h2>Edit Profile</h2>
+
+      {% if error %}<div class="card" style="background:#ffecec;color:#900;padding:10px">{{ error }}</div>{% endif %}
+
+      <form method="post" action="{{ url_for('instructor_edit') }}" class="card">
+        <label>First name:<br><input name="first_name" value="{{ instr.first_name }}"></label><br>
+        <label>Last name:<br><input name="last_name" value="{{ instr.last_name }}"></label><br>
+        <label>Email:<br><input name="email" value="{{ instr.email }}"></label><br>
+        <label>Birth date:<br><input type="date" name="birth_date" value="{{ instr.birth_date }}"></label><br>
+        <p><strong>ID:</strong> {{ instr.instructorID }}</p>
+        <label>New password (leave blank to keep):<br><input type="password" name="password"></label><br>
+        <div style="margin-top:8px;">
+          <button class="btn" type="submit">Save</button>
+          <a class="btn" href="{{ url_for('dashboard') }}">Cancel</a>
+        </div>
+      </form>
+
+    </div>
+  </main>
+</body>
+</html>

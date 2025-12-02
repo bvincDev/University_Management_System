@@ -1,0 +1,25 @@
+<!-- templates/admin/section_form.html -->
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Section</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body>
+<header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1></header>
+<main class="page-body">
+  <div style="max-width:700px;margin:0 auto;">
+    <h2>{{ 'Edit' if section else 'New' }} Section</h2>
+    {% if error %}<div class="card" style="background:#ffecec;color:#900;padding:10px">{{ error }}</div>{% endif %}
+    <form method="post" class="card">
+      <label>Semester:<br><input name="semester" value="{{ section.semester if section else 'Fall' }}"></label><br>
+      <label>Year:<br><input name="year" type="number" value="{{ section.year if section else 2025 }}"></label><br>
+      <label>Course:<br>
+        <select name="courseID">{% for c in courses %}<option value="{{ c.courseID }}" {% if section and section.courseID==c.courseID %}selected{% endif %}>{{ c.course_number }} — {{ c.course_name }}</option>{% endfor %}</select>
+      </label><br>
+      <label>Instructor:<br><select name="instructorID"><option value="">-- none --</option>{% for i in instructors %}<option value="{{ i.instructorID }}" {% if section and section.instructorID==i.instructorID %}selected{% endif %}>{{ i.first_name }} {{ i.last_name }}</option>{% endfor %}</select></label><br>
+      <label>Classroom:<br><select name="classroomID"><option value="">-- none --</option>{% for cl in classrooms %}<option value="{{ cl.classroomID }}" {% if section and section.classroomID==cl.classroomID %}selected{% endif %}>{{ cl.room_number }} — {{ cl.building_name }}</option>{% endfor %}</select></label><br>
+      <label>Timeslot:<br><select name="timeslotID"><option value="">-- none --</option>{% for t in timeslots %}<option value="{{ t.timeslotID }}" {% if section and section.timeslotID==t.timeslotID %}selected{% endif %}>{{ t.day_of_week }} {{ t.start_time }}–{{ t.end_time }}</option>{% endfor %}</select></label><br>
+      <label>Capacity:<br><input name="capacity" type="number" value="{{ section.capacity if section else 30 }}"></label><br>
+      <div style="margin-top:8px;"><button class="btn" type="submit">Save</button> <a class="btn" href="{{ url_for('admin_sections') }}">Cancel</a></div>
+    </form>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!-- templates/instructor/section_roster.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Section Roster</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div>
+    <h1 class="site-title">University Manager</h1>
+    <div class="tab-row"><div class="portal-pill">Instructor Portal</div></div>
+  </header>
+
+  <main class="page-body">
+    <div style="max-width:1200px;margin:0 auto;">
+      <h2>Roster — Section {{ section.sectionID }} • {{ section.course_number }} {{ section.course_name }}</h2>
+
+      <div class="card">
+        <form method="post" action="{{ url_for('instructor_bulk_update_grades', section_id=section.sectionID) }}">
+          <table class="grade-table">
+            <thead><tr><th>Student</th><th>Email</th><th>Status</th><th>Grade</th><th>Actions</th></tr></thead>
+            <tbody>
+              {% for r in roster %}
+              <tr>
+                <td>{{ r.first_name }} {{ r.last_name }} ({{ r.studentID }})</td>
+                <td class="break">{{ r.email }}</td>
+                <td>{{ r.status }}</td>
+                <td>
+                  <input style="width:90px" name="grade_{{ r.enrollmentID }}" value="{{ r.grade }}" placeholder="TBD">
+                </td>
+                <td>
+                  <form style="display:inline" method="post" action="{{ url_for('instructor_remove_student') }}">
+                    <input type="hidden" name="enrollment_id" value="{{ r.enrollmentID }}">
+                    <button class="btn" onclick="return confirm('Remove this student from the section?');">Remove</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <div style="margin-top:12px;">
+            <button class="btn" type="submit">Save Grades</button>
+            <a class="btn" href="{{ url_for('instructor_sections') }}">Back</a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>

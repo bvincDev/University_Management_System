@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Grades - Student Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <!-- same header used on your dashboard/index -->
+    <header class="site-header" role="banner">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+
+      <h1 class="site-title">University Manager</h1>
+      <div class="tab-row">
+        <div class="portal-pill">Student Portal</div>
+      </div>
+    </header>
+
+    <main class="page-body">
+      <section class="student-dashboard">
+        <div style="max-width:1200px;margin:0 auto;padding-top:6px;">
+          <!-- Page heading shown right under the header -->
+          <h2 style="text-align:left;margin-top:0;margin-bottom:12px;">Student Dashboard — Grades</h2>
+
+          <!-- Current / In-progress -->
+          <div class="card" style="margin-bottom:16px;">
+            <h3>Current / In-progress</h3>
+
+            {% if current %}
+            <table class="grade-table">
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Section</th>
+                  <th>When</th>
+                  <th>Room</th>
+                  <th>Instructor</th>
+                  <th>Credits</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for e in current %}
+                <tr>
+                  <td>{{ e.course_number }} — {{ e.course_name }}</td>
+                  <td>{{ e.sectionID }} • {{ e.semester }} {{ e.year }}</td>
+                  <td>
+                    {% if e.day_of_week and e.start_time and e.end_time %}
+                      {{ e.day_of_week }} {{ e.start_time }}–{{ e.end_time }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if e.room_number %}
+                      {{ e.room_number }}{% if e.building_name %} — {{ e.building_name }}{% endif %}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if e.instructorID %}
+                      {{ e.instr_first }} {{ e.instr_last }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>{{ e.credits }}</td>
+                  <td>{{ e.grade if e.grade and e.grade != 'TBD' else 'TBD' }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+              <p>No current enrollments found.</p>
+            {% endif %}
+          </div>
+
+          <!-- Final / Completed -->
+          <div class="card">
+            <h3>Final / Completed Grades</h3>
+
+            {% if final %}
+            <table class="grade-table">
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Section</th>
+                  <th>Semester</th>
+                  <th>Instructor</th>
+                  <th>Credits</th>
+                  <th>Final Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for e in final %}
+                <tr>
+                  <td>{{ e.course_number }} — {{ e.course_name }}</td>
+                  <td>{{ e.sectionID }}</td>
+                  <td>{{ e.semester }} {{ e.year }}</td>
+                  <td>{% if e.instructorID %}{{ e.instr_first }} {{ e.instr_last }}{% else %}-{% endif %}</td>
+                  <td>{{ e.credits }}</td>
+                  <td>{{ e.grade }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+              <p>No final grades recorded yet.</p>
+            {% endif %}
+          </div>
+
+          <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+            <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="logout-container" style="margin-top:12px;">
+        <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+      </div>
+    </main>
+  </body>
+</html>

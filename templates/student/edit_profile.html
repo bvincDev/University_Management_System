@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+      .edit-form .row{display:flex;gap:12px;margin-bottom:10px}
+      .edit-form label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}
+      .edit-form input{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08)}
+      .error{color:#a00;margin-bottom:8px;font-weight:700}
+    </style>
+  </head>
+  <body>
+    <header class="site-header" role="banner">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+      <h1 class="site-title">University Manager</h1>
+      <div class="tab-row"><div class="portal-pill">Student Portal</div></div>
+    </header>
+
+    <main class="page-body">
+      <section class="student-dashboard">
+        <div style="max-width:600px;margin:0 auto;padding-top:6px;">
+          <h2 style="margin-top:0;margin-bottom:12px;">Edit Profile</h2>
+
+          <div class="card">
+            {% if error %}
+              <div class="error">{{ error }}</div>
+            {% endif %}
+
+            <form class="edit-form" method="post" action="{{ url_for('student_edit') }}">
+              <div class="row">
+                <div style="flex:1">
+                  <label>First name</label>
+                  <input name="first_name" type="text" value="{{ student.first_name or '' }}" required>
+                </div>
+                <div style="flex:1">
+                  <label>Last name</label>
+                  <input name="last_name" type="text" value="{{ student.last_name or '' }}" required>
+                </div>
+              </div>
+
+              <div class="row">
+                <div style="flex:1">
+                  <label>Birth date</label>
+                  <input name="birth_date" type="date" value="{{ student.birth_date or '' }}">
+                </div>
+                <div style="flex:1">
+                  <label>New password (leave blank to keep current)</label>
+                  <input name="password" type="password" value="">
+                </div>
+              </div>
+
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+                <a href="{{ url_for('dashboard') }}" class="btn" style="background:#ccc;color:#000">Cancel</a>
+                <button class="btn" type="submit">Save changes</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </section>
+
+      <div class="logout-container" style="margin-top:12px;">
+        <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+      </div>
+    </main>
+  </body>
+</html>

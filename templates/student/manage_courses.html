@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Manage Courses</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <header class="site-header" role="banner">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+      <h1 class="site-title">University Manager</h1>
+      <div class="tab-row"><div class="portal-pill">Student Portal</div></div>
+    </header>
+
+    <main class="page-body">
+      <section class="student-dashboard">
+        <div style="max-width:1200px;margin:0 auto;padding-top:6px;">
+          <h2 style="margin-top:0;margin-bottom:12px;">Student Dashboard — Manage Courses</h2>
+
+          <div class="card" style="margin-bottom:12px;">
+            <h3>Your Current Enrollments</h3>
+
+            {% if enrollments %}
+            <table class="grade-table">
+              <thead>
+                <tr>
+                  <th>Course</th><th>Section</th><th>When</th><th>Room</th><th>Instructor</th><th>Credits</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for e in enrollments %}
+                <tr>
+                  <td>{{ e.course_number }} — {{ e.course_name }}</td>
+                  <td>{{ e.sectionID }} • {{ e.semester }} {{ e.year }}</td>
+                  <td>
+                    {% if e.day_of_week and e.start_time and e.end_time %}
+                      {{ e.day_of_week }} {{ e.start_time }}–{{ e.end_time }}
+                    {% else %}-{% endif %}
+                  </td>
+                  <td>{% if e.room_number %}{{ e.room_number }}{% if e.building_name %} — {{ e.building_name }}{% endif %}{% else %}-{% endif %}</td>
+                  <td>{% if e.instructorID %}{{ e.instr_first }} {{ e.instr_last }}{% else %}-{% endif %}</td>
+                  <td>{{ e.credits }}</td>
+                  <td>
+                    <form method="post" action="{{ url_for('student_drop') }}" style="display:inline">
+                      <input type="hidden" name="enrollment_id" value="{{ e.enrollmentID }}">
+                      <button class="btn" type="submit" onclick="return confirm('Drop this course?');">Drop</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+              <p>You have no current enrollments.</p>
+            {% endif %}
+          </div>
+
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+            <a href="{{ url_for('student_course_info') }}" class="btn">Browse / Register for Sections</a>
+            <a href="{{ url_for('student_grades') }}" class="btn">View Grades</a>
+          </div>
+
+        </div>
+      </section>
+
+      <div class="logout-container" style="margin-top:12px;">
+        <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+      </div>
+    </main>
+  </body>
+</html>

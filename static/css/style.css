@@ -1,81 +1,150 @@
 :root{
-  --dark-strip: #0e4f57;    /* thin dark bar at very top */
-  --teal-strip: #178a97;    /* middle darker teal */
-  --mint-area: #9ed6c9;     /* large strip behind title */
-  --page-bg: #f6eadc;       /* pale cream page background */
-  --accent-border: #1b1210; /* button border */
-  --font: 'JetBrains Mono', monospace;
+  --dark:#0e4f57; --teal:#178a97; --mint:#9ed6c9; --bg:#f6eadc;
+  --accent:#1b1210; --font:"JetBrains Mono", monospace;
 }
 
 *{box-sizing:border-box}
-html,body{
-  height:100%; 
-  margin:0; 
-  background:var(--page-bg); 
-  font-family:var(--font)
-}
+html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font);overflow-x:hidden}
 
-.site-header{
-  position:relative;
-  width:100%;
-  height:160px;
-  display:block;
-  overflow:visible;
-  margin-bottom:60px;
-}
-
-.stripe{ width:100%; display:block; }
-.stripe-top{ height:20px; background:var(--dark-strip); box-shadow: inset 0 -3px rgba(0,0,0,0.05); }
-.stripe-mid{ height:40px; background:var(--teal-strip); border-bottom:4px solid rgba(0,0,0,0.04); }
-.stripe-large{ height:100px; background:var(--mint-area); border-top:6px solid rgba(0,0,0,0.02); }
+/* header */
+.site-header{position:relative;height:160px;margin-bottom:36px}
+.stripe{width:100%;display:block}
+.stripe-top{height:20px;background:var(--dark);box-shadow:inset 0 -3px rgba(0,0,0,.05)}
+.stripe-mid{height:40px;background:var(--teal);border-bottom:4px solid rgba(0,0,0,.04)}
+.stripe-large{height:100px;background:var(--mint);border-top:6px solid rgba(0,0,0,.02)}
 
 .site-title{
-  position:absolute;
-  top:22px;
-  left:50%;
-  transform:translateX(-50%);
-  margin:0;
-  padding:0;
-  font-family:var(--font);
-  font-weight:700;
-  letter-spacing:6px;
-  text-transform:uppercase;
-  font-size:48px;
-  color:#0b1a1a;
-  -webkit-font-smoothing:antialiased;
-  text-shadow: 0 2px 0 rgba(255,255,255,0.15),
-               0 4px 10px rgba(0,0,0,0.1);
-  z-index:10;
+  position:absolute;left:50%;top:22px;transform:translateX(-50%);
+  margin:0;font-weight:700;letter-spacing:6px;text-transform:uppercase;
+  font-size:48px;color:#0b1a1a;text-shadow:0 2px 0 rgba(255,255,255,.15),0 4px 10px rgba(0,0,0,.1);
+  z-index:10;pointer-events:none;
+}
+
+/* portal pill under title */
+.tab-row{position:absolute;left:50%;bottom:-24px;transform:translateX(-50%);z-index:9;display:flex;justify-content:center}
+.portal-pill{
+  padding:8px 20px;border-radius:10px;background:var(--teal);
+  color:#fff;font-weight:700;letter-spacing:1px;box-shadow:0 6px 14px rgba(0,0,0,.08)
+}
+
+/* page / dashboard */
+.page-body{min-height:calc(100vh - 220px);padding:18px}
+.student-dashboard{max-width:1200px;margin:0 auto;padding-top:8px}
+
+/* layout */
+.student-layout{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
+@media (max-width:1000px){.student-layout{grid-template-columns:1fr}}
+
+.profile-card, .card{
+  background:#fff;padding:16px;border-radius:8px;border:1px solid rgba(0,0,0,.06);
+  box-shadow:0 6px 18px rgba(0,0,0,.06)
+}
+.profile-card{max-width:320px}
+.profile-card h3{margin:0 0 10px}
+.profile-card p{margin:6px 0;color:#222;white-space:normal;overflow-wrap:anywhere}
+
+/* label alignment in profile */
+.profile-card p strong{display:inline-block;min-width:90px;margin-right:8px;vertical-align:top}
+
+/* cards grid */
+.actions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;min-height:320px}
+@media (max-width:1000px){.actions-grid{grid-template-columns:1fr}}
+
+.card{display:flex;flex-direction:column;justify-content:space-between;padding:18px}
+.card h3{margin:0 0 8px}.card p{margin:0 0 12px;color:#333}
+
+/* buttons */
+.btn{display:inline-block;padding:8px 12px;background:var(--teal);color:#fff;text-decoration:none;border-radius:6px;font-weight:700}
+.btn:hover{opacity:.95}
+
+
+/* Profile table layout */
+.profile-table{
+  width:100%;
+  border-collapse:collapse;
+  border:1px solid rgba(0,0,0,0.08);
+  background:#fff;
+  border-radius:6px;
+  overflow:hidden; /* keeps rounded corners */
+  box-shadow: none;
+}
+
+.profile-table th,
+.profile-table td{
+  padding:10px 12px;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  text-align:left;
+  vertical-align:top;
+  font-size:14px;
+}
+
+/* header cell styling */
+.profile-table th{
+  width:36%;             /* label column width */
   background:transparent;
-  pointer-events:none;
-}
-
-.tab-row{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:-22px;
-  display:flex;
-  gap:18px;
-  justify-content:center;
-  align-items:center;
-  z-index:8;
-}
-
-
-.tab{
-  font-family:var(--font);
   font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  background:var(--page-bg);
-  border:3px solid var(--accent-border);
-  padding:10px 28px;
-  min-width:90px;
-  height:38px;
-  cursor:pointer;
-  box-shadow: 0 8px 0 rgba(0,0,0,0.06);
-  outline:none;
-  transition:transform .12s ease, box-shadow .12s ease;
-  border-radius:2px;
+  color:#222;
+  white-space:nowrap;    /* label stays on one line */
+}
+
+/* last-row cleanup to remove extra border */
+.profile-table tr:last-child td,
+.profile-table tr:last-child th{
+  border-bottom:0;
+}
+
+/* long/unbroken values wrap safely */
+.profile-table td.break,
+.profile-table td{
+  word-break:break-word;
+  overflow-wrap:anywhere;
+}
+
+/* small screens: make table more compact */
+@media (max-width:520px){
+  .profile-table th{width:40%;font-size:13px;padding:8px}
+  .profile-table td{font-size:13px;padding:8px}
+}
+
+
+
+/* Grades table styling */
+.grade-table{
+  width:100%;
+  border-collapse:collapse;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:6px;
+  overflow:hidden;
+  font-size:14px;
+}
+
+.grade-table th,
+.grade-table td{
+  padding:10px 12px;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  text-align:left;
+  vertical-align:middle;
+}
+
+/* header cells */
+.grade-table thead th{
+  background:transparent;
+  font-weight:700;
+  color:#222;
+}
+
+/* subtle zebra */
+.grade-table tbody tr:nth-child(odd){ background: #fff; }
+.grade-table tbody tr:nth-child(even){ background: #fbfbfb; }
+
+/* remove bottom border on last row */
+.grade-table tbody tr:last-child td{ border-bottom:0; }
+
+/* compact on small screens */
+@media (max-width:800px){
+  .grade-table th, .grade-table td{ padding:8px; font-size:13px }
+  .grade-table thead{ display:none } /* optional: hide header on very small screens */
+  .grade-table tbody tr{ display:block; margin-bottom:10px; border:1px solid rgba(0,0,0,0.04); border-radius:6px; padding:8px; }
+  .grade-table tbody td{ display:block; text-align:right; padding:6px 8px }
+  .grade-table tbody td::before{ content: attr(data-label); float:left; font-weight:700; text-transform:none; color:#333 }
 }

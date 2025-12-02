@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Course Info</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <header class="site-header" role="banner">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+      <h1 class="site-title">University Manager</h1>
+      <div class="tab-row"><div class="portal-pill">Student Portal</div></div>
+    </header>
+
+    <main class="page-body">
+      <section class="student-dashboard">
+        <div style="max-width:1200px;margin:0 auto;padding-top:6px;">
+          <h2 style="margin-top:0;margin-bottom:12px;">Course Info & Sections</h2>
+
+          <form method="get" action="{{ url_for('student_course_info') }}" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <label>
+              Semester:
+              <select name="semester">
+                <option value="Fall" {% if semester=='Fall' %}selected{% endif %}>Fall</option>
+                <option value="Spring" {% if semester=='Spring' %}selected{% endif %}>Spring</option>
+                <option value="Summer" {% if semester=='Summer' %}selected{% endif %}>Summer</option>
+              </select>
+            </label>
+
+            <label>
+              Year:
+              <input name="year" type="number" value="{{ year }}" style="width:100px">
+            </label>
+
+            <label style="flex:1;min-width:220px;">
+              Search course:
+              <input name="q" type="search" placeholder="CS101 or Programming" value="{{ q or '' }}" style="width:100%">
+            </label>
+
+            <button class="btn" type="submit">Search</button>
+            <a href="{{ url_for('student_course_info') }}" class="btn">Reset</a>
+          </form>
+
+          <div class="card">
+            {% if sections %}
+            <table class="grade-table">
+              <thead>
+                <tr>
+                  <th>Course</th><th>Section</th><th>When</th><th>Room</th><th>Instructor</th><th>Capacity</th><th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in sections %}
+                <tr>
+                  <td>{{ s.course_number }} — {{ s.course_name }}</td>
+                  <td>{{ s.sectionID }} • {{ s.semester }} {{ s.year }}</td>
+                  <td>
+                    {% if s.day_of_week and s.start_time and s.end_time %}
+                      {{ s.day_of_week }} {{ s.start_time }}–{{ s.end_time }}
+                    {% else %}-{% endif %}
+                  </td>
+                  <td>{% if s.room_number %}{{ s.room_number }}{% if s.building_name %} — {{ s.building_name }}{% endif %}{% else %}-{% endif %}</td>
+                  <td>{% if s.instructorID %}{{ s.instr_first }} {{ s.instr_last }}{% else %}-{% endif %}</td>
+                  <td>{{ s.enrolled_count }} / {{ s.capacity or '-' }}</td>
+                  <td>
+                    {% if s.capacity and s.enrolled_count >= s.capacity %}
+                      <span style="color:#a00;font-weight:700">Full</span>
+                    {% else %}
+                      <form method="post" action="{{ url_for('student_register') }}">
+                        <input type="hidden" name="section_id" value="{{ s.sectionID }}">
+                        <button class="btn" type="submit">Register</button>
+                      </form>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+              <p>No sections found for the selected semester/year.</p>
+            {% endif %}
+          </div>
+
+          <div style="margin-top:12px;display:flex;justify-content:space-between">
+            <a href="{{ url_for('student_courses') }}" class="btn">My Courses</a>
+            <a href="{{ url_for('student_grades') }}" class="btn">View Grades</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="logout-container" style="margin-top:12px;">
+        <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+      </div>
+    </main>
+  </body>
+</html>

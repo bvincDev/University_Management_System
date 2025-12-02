@@ -6,26 +6,50 @@
     <title>index</title>
     <!-- JetBrains Mono (Bold) (font from the figma) -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
+
   </head>
   <body>
     <header class="site-header" role="banner">
+
       <div class="stripe stripe-top"></div>
       <div class="stripe stripe-mid"></div>
       <div class="stripe stripe-large"></div>
 
-      <h1 class="site-title">University Manager</h1>
+      <h1 class="site-title">UNIVERSITY MANAGER</h1>
 
-      <nav class="tab-row" role="navigation" aria-label="primary">
-        <button class="tab" aria-label="Page 1">PAGE</button>
-        <button class="tab" aria-label="Page 2">PAGE</button>
-        <button class="tab" aria-label="Page 3">PAGE</button>
-      </nav>
     </header>
 
     <main class="page-body">
-      <p style="text-align:center; color:#333; margin-top:80px;">Goofy ah content here...</p>
+
+      <div class = "content-box">
+        <p style = "font-size: 45px;">LOG IN<p>
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="input-wrapper email">
+            <i class="fa-regular fa-envelope"></i>
+            <input type="text" id="email" name="email" placeholder="Email..." required />
+          </div>
+
+          <div class = "input-wrapper password">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" name="password" minlength="1"  placeholder="Password..." required />
+          </div>
+
+          <div>
+          <input id ="login" type="submit" value="Log in" />
+          </div>
+
+        </form>
+      </div>
+
     </main>
+
+    <!--<footer class = "stripe strip-bottom"></footer>-->
   </body>
 </html>
+
+
