@@ -1,0 +1,66 @@
+<!-- templates/admin/classrooms.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Classrooms</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+      <h1 class="site-title">University Manager</h1>
+      <div class="tab-row"><div class="portal-pill">Admin Panel</div></div>
+    </header>
+
+    <main class="page-body">
+      <div style="max-width:1200px;margin:0 auto;">
+        <h2>Classrooms</h2>
+
+        <div class="card" style="margin-bottom:12px;">
+          <form method="post" action="{{ url_for('admin_classrooms') }}" style="display:flex;gap:8px;align-items:center;">
+            <label style="flex:1;">Room number <input name="room_number" required style="width:100%" placeholder="101"></label>
+            <label>Building
+              <select name="buildingID" required>
+                {% for b in buildings %}
+                  <option value="{{ b.buildingID }}">{{ b.building_name }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <button class="btn" type="submit">Add</button>
+          </form>
+        </div>
+
+        {% if classrooms %}
+        <div class="card">
+          <table class="grade-table">
+            <thead><tr><th>ID</th><th>Room</th><th>Building</th><th></th></tr></thead>
+            <tbody>
+              {% for c in classrooms %}
+              <tr>
+                <td data-label="ID">{{ c.classroomID or c.classroom_id or c.id }}</td>
+                <td data-label="Room">{{ c.room_number }}</td>
+                <td data-label="Building">{{ c.building_name or c.building }}</td>
+                <td data-label="Actions">
+                  <form method="post" action="{{ url_for('admin_classroom_delete', classroomID=c.classroomID) }}" style="display:inline">
+                    <button class="btn" type="submit" onclick="return confirm('Delete this classroom?');">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+          <p>No classrooms found.</p>
+        {% endif %}
+
+        <div style="margin-top:12px;">
+          <a class="btn" href="{{ url_for('admin') }}">Back</a>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

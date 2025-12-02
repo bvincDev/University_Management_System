@@ -1,0 +1,64 @@
+<!-- templates/admin/departments.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Departments</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+      <h1 class="site-title">University Manager</h1>
+      <div class="tab-row"><div class="portal-pill">Admin Panel</div></div>
+    </header>
+
+    <main class="page-body">
+      <div style="max-width:1200px;margin:0 auto;">
+        <h2>Departments</h2>
+
+        <div class="card" style="margin-bottom:12px;">
+          <form method="post" action="{{ url_for('admin_departments') }}" style="display:flex;gap:8px;align-items:center;">
+            <label style="flex:1;">Name <input name="department_name" required style="width:100%" placeholder="Department name"></label>
+            <label>Building
+              <select name="buildingID" required>
+                {% for b in buildings %}
+                  <option value="{{ b.buildingID }}">{{ b.building_name }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <button class="btn" type="submit">Add</button>
+          </form>
+        </div>
+
+        {% if departments %}
+        <div class="card">
+          <table class="grade-table">
+            <thead><tr><th>ID</th><th>Name</th><th>Building</th><th></th></tr></thead>
+            <tbody>
+              {% for d in departments %}
+              <tr>
+                <td data-label="ID">{{ d.departmentID or d.department_id or d.id }}</td>
+                <td data-label="Name">{{ d.department_name or d.name }}</td>
+                <td data-label="Building">{{ d.building_name or d.building }}</td>
+                <td data-label="Actions">
+                  <a class="btn" href="#" onclick="location.href='{{ url_for('admin_departments') }}?edit={{ d.departmentID or d.department_id or d.id }}';return false;">Edit</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+          <p>No departments found.</p>
+        {% endif %}
+
+        <div style="margin-top:12px;">
+          <a class="btn" href="{{ url_for('admin') }}">Back</a>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
