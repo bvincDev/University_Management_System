@@ -972,6 +972,636 @@ def instructor_reports():
 
     return render_template('instructor/reports.html', **context)
 
+# ADMIN STUFF! -----------------------
+
+
+# ---------- ADMIN HELPERS & ROUTES (paste after instructor code) ----------
+# Minimal CRUD helpers for admin operations
+
+def get_course_by_id(course_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT * FROM Course WHERE courseID = %s", (course_id,))
+        return cur.fetchone()
+    finally:
+        cur.close()
+        conn.close()
+
+def create_course(course_number, course_name, credits, departmentID):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("INSERT INTO Course (course_name, course_number, credits, departmentID) VALUES (%s,%s,%s,%s)",
+                    (course_name, course_number, credits, departmentID))
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        cur.close()
+        conn.close()
+
+def update_course(course_id, course_number, course_name, credits, departmentID):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE Course SET course_number=%s, course_name=%s, credits=%s, departmentID=%s WHERE courseID=%s",
+                    (course_number, course_name, credits, departmentID, course_id))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_course(course_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Course WHERE courseID=%s", (course_id,))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+# Section helpers
+def get_section_by_id(section_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT * FROM Section WHERE sectionID = %s", (section_id,))
+        return cur.fetchone()
+    finally:
+        cur.close()
+        conn.close()
+
+def create_section(semester, year, courseID, instructorID, classroomID, timeslotID, capacity=30):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO Section (semester, year, courseID, instructorID, classroomID, timeslotID, capacity)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)
+        """, (semester, year, courseID, instructorID, classroomID, timeslotID, capacity))
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        cur.close()
+        conn.close()
+
+def update_section(section_id, semester, year, courseID, instructorID, classroomID, timeslotID, capacity):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE Section SET semester=%s, year=%s, courseID=%s, instructorID=%s, classroomID=%s, timeslotID=%s, capacity=%s
+            WHERE sectionID=%s
+        """, (semester, year, courseID, instructorID, classroomID, timeslotID, capacity, section_id))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_section(section_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Section WHERE sectionID=%s", (section_id,))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+# Classroom CRUD
+def get_all_classrooms():
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT cl.classroomID, cl.room_number, b.building_name FROM Classroom cl JOIN Building b ON cl.buildingID=b.buildingID ORDER BY b.building_name, cl.room_number")
+        return cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+
+def create_classroom(room_number, buildingID):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("INSERT INTO Classroom (room_number, buildingID) VALUES (%s,%s)", (room_number, buildingID))
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        cur.close()
+        conn.close()
+
+def update_classroom(classroomID, room_number, buildingID):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE Classroom SET room_number=%s, buildingID=%s WHERE classroomID=%s", (room_number, buildingID, classroomID))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_classroom(classroomID):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Classroom WHERE classroomID=%s", (classroomID,))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+# Department CRUD
+def get_department(dept_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT * FROM Department WHERE departmentID=%s", (dept_id,))
+        return cur.fetchone()
+    finally:
+        cur.close()
+        conn.close()
+
+def create_department(name, buildingID):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("INSERT INTO Department (department_name, buildingID) VALUES (%s,%s)", (name, buildingID))
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        cur.close()
+        conn.close()
+
+def update_department(dept_id, name, buildingID):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE Department SET department_name=%s, buildingID=%s WHERE departmentID=%s", (name, buildingID, dept_id))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_department(dept_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Department WHERE departmentID=%s", (dept_id,))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+# Timeslot CRUD
+def get_all_timeslots():
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT * FROM Timeslot ORDER BY day_of_week, start_time")
+        return cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+
+def create_timeslot(day, start_time, end_time):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("INSERT INTO Timeslot (day_of_week, start_time, end_time) VALUES (%s,%s,%s)", (day, start_time, end_time))
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        cur.close()
+        conn.close()
+
+def update_timeslot(timeslotID, day, start_time, end_time):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE Timeslot SET day_of_week=%s, start_time=%s, end_time=%s WHERE timeslotID=%s", (day, start_time, end_time, timeslotID))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_timeslot(timeslotID):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Timeslot WHERE timeslotID=%s", (timeslotID,))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+# Instructor & Student CRUD (admin)
+def get_instructor(instr_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT instructorID, first_name, last_name, email, birth_date, departmentID FROM Instructor WHERE instructorID=%s", (instr_id,))
+        return cur.fetchone()
+    finally:
+        cur.close()
+        conn.close()
+
+def create_instructor(first, last, email, birth_date, departmentID, password_hash):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("INSERT INTO Instructor (first_name, last_name, email, password, birth_date, departmentID) VALUES (%s,%s,%s,%s,%s,%s)",
+                    (first, last, email, password_hash, birth_date, departmentID))
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        cur.close()
+        conn.close()
+
+def update_instructor(instr_id, first, last, email, birth_date, departmentID, password_hash=None):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        if password_hash:
+            cur.execute("UPDATE Instructor SET first_name=%s, last_name=%s, email=%s, birth_date=%s, departmentID=%s, password=%s WHERE instructorID=%s",
+                        (first, last, email, birth_date, departmentID, password_hash, instr_id))
+        else:
+            cur.execute("UPDATE Instructor SET first_name=%s, last_name=%s, email=%s, birth_date=%s, departmentID=%s WHERE instructorID=%s",
+                        (first, last, email, birth_date, departmentID, instr_id))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_instructor(instr_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Instructor WHERE instructorID=%s", (instr_id,))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def get_student(student_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT * FROM Student WHERE studentID=%s", (student_id,))
+        return cur.fetchone()
+    finally:
+        cur.close()
+        conn.close()
+
+def create_student(first,last,email,password_hash,birth_date,year,term,standing,major,advisorID=None):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""INSERT INTO Student
+            (first_name,last_name,email,password,birth_date,year,term,standing,major,advisorID)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+            (first,last,email,password_hash,birth_date,year,term,standing,major,advisorID))
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        cur.close()
+        conn.close()
+
+def update_student(student_id, first,last,email,birth_date,year,term,standing,major,advisorID=None, password_hash=None):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        if password_hash:
+            cur.execute("""UPDATE Student SET first_name=%s,last_name=%s,email=%s,birth_date=%s,year=%s,term=%s,standing=%s,major=%s,advisorID=%s,password=%s
+                           WHERE studentID=%s""",
+                        (first,last,email,birth_date,year,term,standing,major,advisorID,password_hash,student_id))
+        else:
+            cur.execute("""UPDATE Student SET first_name=%s,last_name=%s,email=%s,birth_date=%s,year=%s,term=%s,standing=%s,major=%s,advisorID=%s
+                           WHERE studentID=%s""",
+                        (first,last,email,birth_date,year,term,standing,major,advisorID,student_id))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_student(student_id):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("DELETE FROM Student WHERE studentID=%s", (student_id,))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+
+# ---------- ADMIN ROUTES ----------
+def require_admin():
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        return False
+    return True
+
+@app.route('/admin')
+def admin():
+    if not require_admin():
+        return redirect(url_for('index'))
+    return render_template('admin/index.html', user_name=session.get('user_name'))
+
+
+# Courses
+@app.route('/admin/courses')
+def admin_courses():
+    if not require_admin(): return redirect(url_for('index'))
+    courses = get_all_courses()
+    departments = get_all_departments()
+    return render_template('admin/courses.html', courses=courses, departments=departments, user_name=session.get('user_name'))
+
+@app.route('/admin/course/new', methods=['GET','POST'])
+@app.route('/admin/course/<int:course_id>/edit', methods=['GET','POST'])
+def admin_course_edit(course_id=None):
+    if not require_admin(): return redirect(url_for('index'))
+    departments = get_all_departments()
+    if request.method == 'GET':
+        course = get_course_by_id(course_id) if course_id else None
+        return render_template('admin/course_form.html', course=course, departments=departments, user_name=session.get('user_name'))
+    # POST
+    course_number = request.form.get('course_number')
+    course_name = request.form.get('course_name')
+    credits = int(request.form.get('credits') or 0)
+    departmentID = int(request.form.get('departmentID'))
+    try:
+        if course_id:
+            update_course(course_id, course_number, course_name, credits, departmentID)
+        else:
+            create_course(course_number, course_name, credits, departmentID)
+    except Exception as e:
+        # simple error handling
+        return render_template('admin/course_form.html', course=request.form, departments=departments, error=str(e), user_name=session.get('user_name'))
+    return redirect(url_for('admin_courses'))
+
+@app.route('/admin/course/<int:course_id>/delete', methods=['POST'])
+def admin_course_delete(course_id):
+    if not require_admin(): return redirect(url_for('index'))
+    delete_course(course_id)
+    return redirect(url_for('admin_courses'))
+
+# Sections
+@app.route('/admin/sections')
+def admin_sections():
+    if not require_admin(): return redirect(url_for('index'))
+    # reuse get_sections for listing
+    semester = request.args.get('semester') or None
+    year = request.args.get('year') or None
+    sections = get_sections(semester=semester, year=year)
+    courses = get_all_courses()
+    instructors = []  # simple list
+    # get instructor list
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT instructorID, first_name, last_name FROM Instructor ORDER BY last_name")
+        instructors = cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+    classrooms = get_all_classrooms()
+    timeslots = get_all_timeslots()
+    return render_template('admin/sections.html', sections=sections, courses=courses, instructors=instructors, classrooms=classrooms, timeslots=timeslots, user_name=session.get('user_name'))
+
+@app.route('/admin/section/new', methods=['GET','POST'])
+@app.route('/admin/section/<int:section_id>/edit', methods=['GET','POST'])
+def admin_section_edit(section_id=None):
+    if not require_admin(): return redirect(url_for('index'))
+    courses = get_all_courses()
+    instructors = []
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT instructorID, first_name, last_name FROM Instructor ORDER BY last_name")
+        instructors = cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+    classrooms = get_all_classrooms()
+    timeslots = get_all_timeslots()
+    if request.method == 'GET':
+        section = get_section_by_id(section_id) if section_id else None
+        return render_template('admin/section_form.html', section=section, courses=courses, instructors=instructors, classrooms=classrooms, timeslots=timeslots, user_name=session.get('user_name'))
+    # POST
+    semester = request.form.get('semester')
+    year = int(request.form.get('year'))
+    courseID = int(request.form.get('courseID'))
+    instructorID = int(request.form.get('instructorID')) if request.form.get('instructorID') else None
+    classroomID = int(request.form.get('classroomID')) if request.form.get('classroomID') else None
+    timeslotID = int(request.form.get('timeslotID')) if request.form.get('timeslotID') else None
+    capacity = int(request.form.get('capacity') or 30)
+    try:
+        if section_id:
+            update_section(section_id, semester, year, courseID, instructorID, classroomID, timeslotID, capacity)
+        else:
+            create_section(semester, year, courseID, instructorID, classroomID, timeslotID, capacity)
+    except Exception as e:
+        section = request.form
+        return render_template('admin/section_form.html', section=section, courses=courses, instructors=instructors, classrooms=classrooms, timeslots=timeslots, error=str(e), user_name=session.get('user_name'))
+    return redirect(url_for('admin_sections'))
+
+@app.route('/admin/section/<int:section_id>/delete', methods=['POST'])
+def admin_section_delete(section_id):
+    if not require_admin(): return redirect(url_for('index'))
+    delete_section(section_id)
+    return redirect(url_for('admin_sections'))
+
+# Section roster (admin can view/submit grades)
+@app.route('/admin/section/<int:section_id>/roster')
+def admin_section_roster(section_id):
+    if not require_admin(): return redirect(url_for('index'))
+    section = get_section_by_id(section_id)
+    if not section:
+        return redirect(url_for('admin_sections'))
+    roster = get_section_roster(section_id)
+    # reuse instructor roster template
+    return render_template('instructor/section_roster.html', section=section, roster=roster, user_name=session.get('user_name'))
+
+@app.route('/admin/section/<int:section_id>/grades', methods=['POST'])
+def admin_section_grades(section_id):
+    if not require_admin(): return redirect(url_for('index'))
+    for key, value in request.form.items():
+        if key.startswith('grade_'):
+            enrollment_id = key.split('_',1)[1]
+            grade = value.strip()
+            if grade:
+                set_enrollment_grade(enrollment_id, grade)
+    return redirect(url_for('admin_section_roster', section_id=section_id))
+
+# Users (instructors & students) list & edit
+@app.route('/admin/users')
+def admin_users():
+    if not require_admin(): return redirect(url_for('index'))
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT studentID AS id, first_name, last_name, email, 'student' AS role FROM Student")
+        students = cur.fetchall()
+        cur.execute("SELECT instructorID AS id, first_name, last_name, email, 'instructor' AS role FROM Instructor")
+        instructors = cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+    return render_template('admin/users.html', students=students, instructors=instructors, user_name=session.get('user_name'))
+
+@app.route('/admin/user/<string:role>/new', methods=['GET','POST'])
+@app.route('/admin/user/<string:role>/<int:user_id>/edit', methods=['GET','POST'])
+def admin_user_edit(role, user_id=None):
+    if not require_admin(): return redirect(url_for('index'))
+    # role = 'student' or 'instructor'
+    if role not in ('student','instructor'):
+        return redirect(url_for('admin_users'))
+
+    departments = get_all_departments()
+    if request.method == 'GET':
+        data = None
+        if user_id:
+            if role == 'student':
+                data = get_student(user_id)
+            else:
+                data = get_instructor(user_id)
+        return render_template('admin/user_form.html', role=role, data=data, departments=departments, user_name=session.get('user_name'))
+
+    # POST create/update
+    first = request.form.get('first_name','').strip()
+    last = request.form.get('last_name','').strip()
+    email = request.form.get('email','').strip()
+    birth_date = request.form.get('birth_date') or None
+    dept = int(request.form.get('departmentID')) if request.form.get('departmentID') else None
+    pwd = request.form.get('password','').strip()
+    pwd_hash = hashlib.sha256(pwd.encode('utf-8')).hexdigest() if pwd else None
+
+    try:
+        if role == 'student':
+            year = int(request.form.get('year') or 1)
+            term = request.form.get('term') or ''
+            standing = request.form.get('standing') or ''
+            major = request.form.get('major') or ''
+            advisorID = int(request.form.get('advisorID')) if request.form.get('advisorID') else None
+            if user_id:
+                update_student(user_id, first, last, email, birth_date, year, term, standing, major, advisorID, pwd_hash)
+            else:
+                create_student(first,last,email,pwd_hash or hashlib.sha256(b"default").hexdigest(),birth_date,year,term,standing,major,advisorID)
+        else:
+            if user_id:
+                update_instructor(user_id, first, last, email, birth_date, dept, pwd_hash)
+            else:
+                create_instructor(first,last,email,birth_date,dept,pwd_hash or hashlib.sha256(b"default").hexdigest())
+    except Exception as e:
+        return render_template('admin/user_form.html', role=role, data=request.form, departments=departments, error=str(e), user_name=session.get('user_name'))
+
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/user/<string:role>/<int:user_id>/delete', methods=['POST'])
+def admin_user_delete(role, user_id):
+    if not require_admin(): return redirect(url_for('index'))
+    if role == 'student':
+        delete_student(user_id)
+    else:
+        delete_instructor(user_id)
+    return redirect(url_for('admin_users'))
+
+# CRUD for classroom, department, timeslot (simple endpoints)
+@app.route('/admin/classrooms', methods=['GET','POST'])
+def admin_classrooms():
+    if not require_admin(): return redirect(url_for('index'))
+    if request.method == 'GET':
+        classrooms = get_all_classrooms()
+        conn = config.get_db_connection()
+        try:
+            cur = conn.cursor(dictionary=True)
+            cur.execute("SELECT buildingID, building_name FROM Building ORDER BY building_name")
+            buildings = cur.fetchall()
+        finally:
+            cur.close(); conn.close()
+        return render_template('admin/classrooms.html', classrooms=classrooms, buildings=buildings, user_name=session.get('user_name'))
+    # POST could create classroom (form: room_number, buildingID)
+    room = request.form.get('room_number')
+    buildingID = int(request.form.get('buildingID'))
+    create_classroom(room, buildingID)
+    return redirect(url_for('admin_classrooms'))
+
+@app.route('/admin/classroom/<int:classroomID>/delete', methods=['POST'])
+def admin_classroom_delete(classroomID):
+    if not require_admin(): return redirect(url_for('index'))
+    delete_classroom(classroomID)
+    return redirect(url_for('admin_classrooms'))
+
+@app.route('/admin/departments', methods=['GET','POST'])
+def admin_departments():
+    if not require_admin(): return redirect(url_for('index'))
+    if request.method == 'GET':
+        depts = get_all_departments()
+        conn = config.get_db_connection()
+        try:
+            cur = conn.cursor(dictionary=True)
+            cur.execute("SELECT buildingID, building_name FROM Building ORDER BY building_name")
+            buildings = cur.fetchall()
+        finally:
+            cur.close(); conn.close()
+        return render_template('admin/departments.html', departments=depts, buildings=buildings, user_name=session.get('user_name'))
+    name = request.form.get('department_name')
+    buildingID = int(request.form.get('buildingID'))
+    create_department(name, buildingID)
+    return redirect(url_for('admin_departments'))
+
+@app.route('/admin/timeslots', methods=['GET','POST'])
+def admin_timeslots():
+    if not require_admin(): return redirect(url_for('index'))
+    if request.method == 'GET':
+        timeslots = get_all_timeslots()
+        return render_template('admin/timeslots.html', timeslots=timeslots, user_name=session.get('user_name'))
+    day = request.form.get('day_of_week')
+    start_time = request.form.get('start_time')
+    end_time = request.form.get('end_time')
+    create_timeslot(day, start_time, end_time)
+    return redirect(url_for('admin_timeslots'))
+
+# Assign/modify/remove teacher for a section (admin)
+@app.route('/admin/section/<int:section_id>/assign-instructor', methods=['POST'])
+def admin_assign_instructor(section_id):
+    if not require_admin(): return redirect(url_for('index'))
+    instr_id = int(request.form.get('instructorID')) if request.form.get('instructorID') else None
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE Section SET instructorID=%s WHERE sectionID=%s", (instr_id, section_id))
+        conn.commit()
+    finally:
+        cur.close(); conn.close()
+    return redirect(url_for('admin_section_roster', section_id=section_id))
+
+# Add/remove advisor to student (admin)
+@app.route('/admin/student/<int:student_id>/assign-advisor', methods=['POST'])
+def admin_assign_advisor(student_id):
+    if not require_admin(): return redirect(url_for('index'))
+    advisorID = int(request.form.get('advisorID')) if request.form.get('advisorID') else None
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE Student SET advisorID=%s WHERE studentID=%s", (advisorID, student_id))
+        conn.commit()
+    finally:
+        cur.close(); conn.close()
+    return redirect(url_for('admin_users'))
+
+# Reuse existing course prereq endpoint if needed
+@app.route('/admin/prereqs')
+def admin_prereqs():
+    if not require_admin(): return redirect(url_for('index'))
+    courses = get_all_courses()
+    prereqs = get_course_prereqs()
+    return render_template('instructor/prereqs.html', courses=courses, prereqs=prereqs, user_name=session.get('user_name'))
+
+
+
+
+
 @app.route('/logout')
 def logout():
     session.clear()

@@ -1,0 +1,29 @@
+<!-- templates/admin/index.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1><div class="tab-row"><div class="portal-pill">Admin Panel</div></div></header>
+
+  <main class="page-body">
+    <div style="max-width:1200px;margin:0 auto;">
+      <h2>Admin Panel — {{ user_name }}</h2>
+      <div class="actions-grid">
+        <div class="card action-card"><h3>Courses</h3><p>CRUD for courses.</p><a href="{{ url_for('admin_courses') }}" class="btn">Open</a></div>
+        <div class="card action-card"><h3>Sections</h3><p>Create/assign sections & instructors.</p><a href="{{ url_for('admin_sections') }}" class="btn">Open</a></div>
+        <div class="card action-card"><h3>Users</h3><p>Manage instructors and students.</p><a href="{{ url_for('admin_users') }}" class="btn">Open</a></div>
+        <div class="card action-card"><h3>Classrooms</h3><p>Manage building rooms.</p><a href="{{ url_for('admin_classrooms') }}" class="btn">Open</a></div>
+        <div class="card action-card"><h3>Departments</h3><p>Manage departments.</p><a href="{{ url_for('admin_departments') }}" class="btn">Open</a></div>
+        <div class="card action-card"><h3>Timeslots</h3><p>Manage class times.</p><a href="{{ url_for('admin_timeslots') }}" class="btn">Open</a></div>
+        <div class="card action-card"><h3>Prerequisites</h3><p>Modify course prerequisites.</p><a href="{{ url_for('admin_prereqs') }}" class="btn">Open</a></div>
+      </div>
+
+      <div style="margin-top:12px;"><a class="btn" href="{{ url_for('dashboard') }}">Back</a></div>
+    </div>
+  </main>
+</body>
+</html>

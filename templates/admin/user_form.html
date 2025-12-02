@@ -1,0 +1,36 @@
+<!-- templates/admin/user_form.html -->
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>User</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body>
+<header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1></header>
+<main class="page-body">
+  <div style="max-width:700px;margin:0 auto;">
+    <h2>{{ 'Edit' if data else 'Create' }} {{ role.capitalize() }}</h2>
+    {% if error %}<div class="card" style="background:#ffecec;color:#900;padding:10px">{{ error }}</div>{% endif %}
+    <form method="post" class="card">
+      <label>First name:<br><input name="first_name" value="{{ data.first_name if data else '' }}"></label><br>
+      <label>Last name:<br><input name="last_name" value="{{ data.last_name if data else '' }}"></label><br>
+      <label>Email:<br><input name="email" value="{{ data.email if data else '' }}"></label><br>
+      <label>Birth date:<br><input type="date" name="birth_date" value="{{ data.birth_date if data else '' }}"></label><br>
+      <label>Department:<br>
+        <select name="departmentID">
+          <option value="">-- none --</option>
+          {% for d in departments %}
+            <option value="{{ d.departmentID }}" {% if data and data.departmentID==d.departmentID %}selected{% endif %}>{{ d.department_name }}</option>
+          {% endfor %}
+        </select>
+      </label><br>
+      {% if role == 'student' %}
+        <label>Year:<br><input name="year" value="{{ data.year if data else 1 }}"></label><br>
+        <label>Term:<br><input name="term" value="{{ data.term if data else '' }}"></label><br>
+        <label>Standing:<br><input name="standing" value="{{ data.standing if data else '' }}"></label><br>
+        <label>Major:<br><input name="major" value="{{ data.major if data else '' }}"></label><br>
+        <label>Advisor ID:<br><input name="advisorID" value="{{ data.advisorID if data else '' }}"></label><br>
+      {% endif %}
+      <label>New password:<br><input type="password" name="password"></label><br>
+      <div style="margin-top:8px;"><button class="btn" type="submit">Save</button> <a class="btn" href="{{ url_for('admin_users') }}">Cancel</a></div>
+    </form>
+  </div>
+</main>
+</body>
+</html>

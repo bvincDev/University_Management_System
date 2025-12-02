@@ -1,0 +1,60 @@
+<!-- templates/admin/users.html -->
+<!doctype html>
+<html><head><meta charset="utf-8"/><title>Users</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body>
+<header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1></header>
+<main class="page-body">
+  <div style="max-width:1100px;margin:0 auto;">
+    <h2>Users</h2>
+    <div style="margin-bottom:8px;">
+      <a class="btn" href="{{ url_for('admin_user_edit', role='instructor') }}">Create Instructor</a>
+      <a class="btn" href="{{ url_for('admin_user_edit', role='student') }}">Create Student</a>
+      <a class="btn" href="{{ url_for('admin') }}">Back</a>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <h3>Instructors</h3>
+      <table class="grade-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for i in instructors %}
+          <tr>
+            <td>{{ i.first_name }} {{ i.last_name }}</td>
+            <td class="break">{{ i.email }}</td>
+            <td>
+              <a class="btn" href="{{ url_for('admin_user_edit', role='instructor', user_id=i.id) }}">Edit</a>
+              <form style="display:inline" method="post" action="{{ url_for('admin_user_delete', role='instructor', user_id=i.id) }}">
+                <button class="btn" onclick="return confirm('Delete instructor?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Students</h3>
+      <table class="grade-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td>{{ s.first_name }} {{ s.last_name }}</td>
+            <td class="break">{{ s.email }}</td>
+            <td>
+              <a class="btn" href="{{ url_for('admin_user_edit', role='student', user_id=s.id) }}">Edit</a>
+              <form style="display:inline" method="post" action="{{ url_for('admin_user_delete', role='student', user_id=s.id) }}">
+                <button class="btn" onclick="return confirm('Delete student?');">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+</body>
+</html>
