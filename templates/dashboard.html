@@ -98,7 +98,7 @@
       <section class="student-dashboard instructor-dashboard">
         <div class="student-layout">
           <aside class="profile-card">
-            <h3>Profile</h3>
+            <h3>Instructor</h3>
             <table class="profile-table">
               <tbody>
                 <tr><th>Name</th><td>{{ user_name }}</td></tr>
@@ -106,71 +106,38 @@
               </tbody>
             </table>
             <div class="profile-actions">
-              <a href="/instructor/edit" class="btn">Edit Profile</a>
+              <a href="{{ url_for('instructor_edit') }}" class="btn">Edit Profile</a>
             </div>
           </aside>
 
-          <!-- Instructor main column: quick actions + live section list -->
-          <div style="width:100%;">
-            <div class="actions-grid" style="margin-bottom:18px">
-              <div class="card action-card">
-                <h3>My Sections</h3>
-                <p>View sections you teach (click a roster to submit grades).</p>
-                <a href="{{ url_for('instructor_sections') }}" class="btn">Open</a>
-              </div>
-
-              <div class="card action-card">
-                <h3>Gradebook</h3>
-                <p>Open gradebook for a consolidated view of your sections.</p>
-                <a href="{{ url_for('instructor_gradebook') }}" class="btn">Open</a>
-              </div>
-
-              <div class="card action-card">
-                <h3>Advisee Tools</h3>
-                <p>Manage advisees and quick reports (if assigned).</p>
-                <a href="{{ url_for('instructor_advisees') }}" class="btn">Open</a>
-              </div>
-
-              <div class="card action-card">
-                <h3>Section Roster</h3>
-                <p>Open any section below to view roster and submit grades.</p>
-                <a href="{{ url_for('instructor_sections') }}" class="btn">Open</a>
-              </div>
+          <div class="actions-grid">
+            <div class="card action-card">
+              <h3>My Sections</h3>
+              <p>View sections you teach (filter by semester/year).</p>
+              <a href="{{ url_for('instructor_sections') }}" class="btn">Open</a>
             </div>
 
-            <div class="card">
-              <h3>Your Sections</h3>
+            <div class="card action-card">
+              <h3>Section Roster & Grades</h3>
+              <p>Open a section roster to submit or change grades, or remove students.</p>
+              <a href="{{ url_for('instructor_sections') }}" class="btn">Open</a>
+            </div>
 
-              {% if my_sections and my_sections|length > 0 %}
-                <table class="grade-table">
-                  <thead>
-                    <tr>
-                      <th>Course</th><th>Term</th><th>Time</th><th>Room</th><th>Cap</th><th>Enrolled</th><th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for s in my_sections %}
-                    <tr>
-                      <td data-label="Course">{{ s.course_number }} — {{ s.course_name }}</td>
-                      <td data-label="Term">{{ s.semester }} {{ s.year }}</td>
-                      <td data-label="Time">{{ s.day_of_week or '' }} {{ s.start_time or '' }}–{{ s.end_time or '' }}</td>
-                      <td data-label="Room">{{ s.building_name or '' }} {{ s.room_number or '' }}</td>
-                      <td data-label="Cap">{{ s.capacity }}</td>
-                      <td data-label="Enrolled">{{ s.enrolled_count }}</td>
-                      <td data-label="">
-                        <a class="btn" href="{{ url_for('instructor_section_roster', section_id=s.sectionID) }}">Roster</a>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              {% else %}
-                <p>No sections found for you this term. <a href="{{ url_for('instructor_sections') }}">View all sections</a></p>
-              {% endif %}
+            <div class="card action-card">
+              <h3>Course Prerequisites</h3>
+              <p>Modify course prerequisites (add / remove).</p>
+              <a href="{{ url_for('instructor_prereqs') }}" class="btn">Open</a>
+            </div>
+
+            <div class="card action-card">
+              <h3>Reports / Analytics</h3>
+              <p>Average grades by department, best/worst classes, totals by department.</p>
+              <a href="{{ url_for('instructor_reports') }}" class="btn">Open</a>
             </div>
           </div>
         </div>
       </section>
+
 
       <!-- ADMIN DASHBOARD -->
       {% elif user_type == 'admin' %}

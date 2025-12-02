@@ -1,56 +1,33 @@
+<!-- templates/instructor/edit_profile.html -->
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Edit Instructor Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="stripe stripe-top"></div>
-      <div class="stripe stripe-mid"></div>
-      <div class="stripe stripe-large"></div>
-      <h1 class="site-title">University Manager</h1>
-      <div class="tab-row"><div class="portal-pill">Instructor Portal</div></div>
-    </header>
+<head>
+  <meta charset="utf-8" />
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1><div class="tab-row"><div class="portal-pill">Instructor Portal</div></div></header>
+  <main class="page-body">
+    <div style="max-width:600px;margin:0 auto;">
+      <h2>Edit Profile</h2>
 
-    <main class="page-body">
-      <section class="student-dashboard">
-        <div class="student-layout">
-          <aside class="profile-card">
-            <h3>Edit Profile</h3>
-            <table class="profile-table">
-              <tbody>
-                <tr><th>Name</th><td>{{ user_name }}</td></tr>
-                <tr><th>Email</th><td class="break">{{ user_email }}</td></tr>
-              </tbody>
-            </table>
-          </aside>
+      {% if error %}<div class="card" style="background:#ffecec;color:#900;padding:10px">{{ error }}</div>{% endif %}
 
-          <div class="card" style="width:100%;">
-            {% if error %}<div class="error">{{ error }}</div>{% endif %}
-            <form method="post" style="display:flex;flex-direction:column;gap:10px;max-width:520px;">
-              <label>First name
-                <input name="first_name" value="{{ instructor.first_name }}" required>
-              </label>
-              <label>Last name
-                <input name="last_name" value="{{ instructor.last_name }}" required>
-              </label>
-              <label>Birth date
-                <input name="birth_date" type="date" value="{{ instructor.birth_date }}">
-              </label>
-              <label>New password (leave blank to keep)
-                <input name="password" type="password" placeholder="••••••">
-              </label>
-
-              <div style="display:flex;gap:10px;">
-                <button class="btn" type="submit">Save</button>
-                <a class="btn" href="{{ url_for('dashboard') }}">Cancel</a>
-              </div>
-            </form>
-          </div>
+      <form method="post" action="{{ url_for('instructor_edit') }}" class="card">
+        <label>First name:<br><input name="first_name" value="{{ instr.first_name }}"></label><br>
+        <label>Last name:<br><input name="last_name" value="{{ instr.last_name }}"></label><br>
+        <label>Email:<br><input name="email" value="{{ instr.email }}"></label><br>
+        <label>Birth date:<br><input type="date" name="birth_date" value="{{ instr.birth_date }}"></label><br>
+        <p><strong>ID:</strong> {{ instr.instructorID }}</p>
+        <label>New password (leave blank to keep):<br><input type="password" name="password"></label><br>
+        <div style="margin-top:8px;">
+          <button class="btn" type="submit">Save</button>
+          <a class="btn" href="{{ url_for('dashboard') }}">Cancel</a>
         </div>
-      </section>
-    </main>
-  </body>
+      </form>
+
+    </div>
+  </main>
+</body>
 </html>

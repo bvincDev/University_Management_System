@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Gradebook</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1><div class="tab-row"><div class="portal-pill">Instructor Portal</div></div></header>
+
+  <main class="page-body">
+    <div style="max-width:1200px;margin:0 auto;padding-top:6px;">
+      <h2>Gradebook</h2>
+      <p>Click a section to open its roster and submit grades.</p>
+
+      {% if sections %}
+      <table class="grade-table">
+        <thead><tr><th>Course</th><th>Section</th><th>Enrolled</th><th>Open</th></tr></thead>
+        <tbody>
+          {% for s in sections %}
+          <tr>
+            <td>{{ s.course_number }} — {{ s.course_name }}</td>
+            <td>{{ s.sectionID }} • {{ s.semester }} {{ s.year }}</td>
+            <td>{{ s.enrolled_count }}</td>
+            <td><a class="btn" href="{{ url_for('instructor_section_roster', section_id=s.sectionID) }}">Open</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p>No sections found.</p>
+      {% endif %}
+
+      <div style="margin-top:12px;"><a href="{{ url_for('dashboard') }}" class="btn">Back</a></div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!-- templates/instructor/reports.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Instructor Reports</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1><div class="tab-row"><div class="portal-pill">Instructor Portal</div></div></header>
+
+<main class="page-body">
+  <div style="max-width:1200px;margin:0 auto;">
+    <h2>Reports & Analytics</h2>
+
+    <div class="card" style="margin-bottom:12px;">
+      <h3>Average Grade by Department</h3>
+      <form method="get" action="{{ url_for('instructor_reports') }}">
+        <label>Department:
+          <select name="department_id">
+            <option value="">All Departments</option>
+            {% for d in departments %}<option value="{{ d.departmentID }}" {% if department_id==d.departmentID %}selected{% endif %}>{{ d.department_name }}</option>{% endfor %}
+          </select>
+        </label>
+        <button class="btn" type="submit">Get</button>
+      </form>
+
+      {% if avg_by_dept is defined %}
+        <div style="margin-top:8px;">
+          <strong>Average (numeric GPA) by department:</strong>
+          <ul>
+            {% for r in avg_by_dept %}<li>{{ r.department_name }} — {{ r.avg_gpa|round(3) if r.avg_gpa is not none else 'N/A' }}</li>{% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <h3>Average Grade for a Course across a Range of Semesters</h3>
+      <form method="get" action="{{ url_for('instructor_reports') }}">
+        <input type="hidden" name="report" value="course_range">
+        <label>Course:
+          <select name="course_id">
+            {% for c in courses %}<option value="{{ c.courseID }}" {% if course_id==c.courseID %}selected{% endif %}>{{ c.course_number }} — {{ c.course_name }}</option>{% endfor %}
+          </select>
+        </label>
+        <label>From semester/year:
+          <input name="from_semester" placeholder="Fall" value="{{ from_semester or '' }}">
+          <input name="from_year" type="number" placeholder="2023" value="{{ from_year or '' }}">
+        </label>
+        <label>To semester/year:
+          <input name="to_semester" placeholder="Spring" value="{{ to_semester or '' }}">
+          <input name="to_year" type="number" placeholder="2025" value="{{ to_year or '' }}">
+        </label>
+        <button class="btn" type="submit">Get</button>
+      </form>
+
+      {% if avg_course_range is defined %}
+        <p>Average GPA for the course across selected range: <strong>{{ avg_course_range.avg_gpa|round(3) if avg_course_range.avg_gpa is not none else 'N/A' }}</strong></p>
+      {% endif %}
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <h3>Best & Worst Classes for a Semester</h3>
+      <form method="get" action="{{ url_for('instructor_reports') }}">
+        <input type="hidden" name="report" value="best_worst">
+        <label>Semester:
+          <select name="semester">
+            <option value="Spring">Spring</option><option value="Summer">Summer</option><option value="Fall">Fall</option>
+          </select>
+        </label>
+        <label>Year: <input name="year" type="number" value="{{ year or '' }}"></label>
+        <button class="btn" type="submit">Get</button>
+      </form>
+
+      {% if best_worst %}
+        <h4>Top classes</h4>
+        <ul>{% for r in best_worst.top %}<li>{{ r.course_number }} — {{ r.course_name }} — avg: {{ r.avg_gpa|round(3) }}</li>{% endfor %}</ul>
+        <h4>Bottom classes</h4>
+        <ul>{% for r in best_worst.bottom %}<li>{{ r.course_number }} — {{ r.course_name }} — avg: {{ r.avg_gpa|round(3) }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h3>Student Counts by Department</h3>
+      <form method="get" action="{{ url_for('instructor_reports') }}">
+        <input type="hidden" name="report" value="counts">
+        <button class="btn" type="submit">Get Counts</button>
+      </form>
+
+      {% if counts %}
+        <h4>Totals</h4>
+        <ul>
+          {% for r in counts %}
+            <li>{{ r.department_name }} — Total students (ever): {{ r.total_students }} — Currently enrolled: {{ r.current_students }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <div style="margin-top:12px;"><a class="btn" href="{{ url_for('dashboard') }}">Back</a></div>
+  </div>
+</main>
+</body>
+</html>

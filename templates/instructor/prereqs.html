@@ -1,0 +1,65 @@
+<!-- templates/instructor/prereqs.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Course Prerequisites</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1><div class="tab-row"><div class="portal-pill">Instructor Portal</div></div></header>
+
+  <main class="page-body">
+    <div style="max-width:1200px;margin:0 auto;">
+      <h2>Course Prerequisites</h2>
+
+      <div class="card" style="margin-bottom:12px;">
+        <h3>Add Prerequisite</h3>
+        <form method="post" action="{{ url_for('instructor_prereqs') }}">
+          <input type="hidden" name="action" value="add">
+          <label>Course:
+            <select name="course_id">
+              {% for c in courses %}<option value="{{ c.courseID }}">{{ c.course_number }} — {{ c.course_name }}</option>{% endfor %}
+            </select>
+          </label>
+          <label>Prerequisite:
+            <select name="prereq_id">
+              {% for c in courses %}<option value="{{ c.courseID }}">{{ c.course_number }} — {{ c.course_name }}</option>{% endfor %}
+            </select>
+          </label>
+          <button class="btn" type="submit">Add Prereq</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Existing Prerequisites</h3>
+        {% if prereqs %}
+          <table class="grade-table">
+            <thead><tr><th>Course</th><th>Prerequisite</th><th>Remove</th></tr></thead>
+            <tbody>
+              {% for p in prereqs %}
+              <tr>
+                <td>{{ p.course_number }} — {{ p.course_name }}</td>
+                <td>{{ p.prereq_number }} — {{ p.prereq_name }}</td>
+                <td>
+                  <form method="post" action="{{ url_for('instructor_prereqs') }}">
+                    <input type="hidden" name="action" value="remove">
+                    <input type="hidden" name="course_id" value="{{ p.courseID }}">
+                    <input type="hidden" name="prereq_id" value="{{ p.prereqCourseID }}">
+                    <button class="btn" onclick="return confirm('Remove prerequisite?')">Remove</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No prerequisites defined.</p>
+        {% endif %}
+      </div>
+
+      <div style="margin-top:12px;"><a class="btn" href="{{ url_for('dashboard') }}">Back</a></div>
+    </div>
+  </main>
+</body>
+</html>
