@@ -22,3 +22,14 @@ WHERE email = 'test.student@university.edu';
 DELETE FROM Student
 WHERE email = 'test.student@university.edu';
 
+
+START TRANSACTION;
+UPDATE Student
+SET first_name = 'NewFirst',
+    last_name = 'NewLast',
+    birth_date = '2003-01-01',
+    password = SHA2('newpassword', 256)
+WHERE studentID = 1;
+COMMIT;
+
+

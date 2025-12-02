@@ -1,0 +1,126 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>index</title>
+    <!-- JetBrains Mono (Bold) (font from the figma) -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <header class="site-header" role="banner">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+
+      <h1 class="site-title">University Manager</h1>
+      <div class="tab-row">
+      <div class="portal-pill">Student Portal</div>
+    </div>
+
+
+    </header>
+
+    <main class="page-body">
+      
+
+      <!-- STUDENT DASHBOARD -->
+      {% if user_type == 'student' %}
+      <section class="student-dashboard">
+        <div class="student-layout">
+          <aside class="profile-card">
+            <h3>Profile</h3>
+
+            {% if student_profile %}
+            <table class="profile-table">
+              <tbody>
+                <tr><th>ID</th><td>{{ student_profile.id }}</td></tr>
+                <tr><th>Name</th><td>{{ student_profile.first_name }} {{ student_profile.last_name }}</td></tr>
+                <tr><th>Email</th><td class="break">{{ student_profile.email }}</td></tr>
+                <tr><th>Birth date</th><td>{{ student_profile.birth_date }}</td></tr>
+                <tr><th>Year</th><td>{{ student_profile.year }}</td></tr>
+                <tr><th>Term</th><td>{{ student_profile.term }}</td></tr>
+                <tr><th>Standing</th><td>{{ student_profile.standing }}</td></tr>
+                <tr><th>Major</th><td>{{ student_profile.major }}</td></tr>
+                <tr><th>Advisor</th><td>
+                    {% if student_profile.advisorID %}
+                      <a href="mailto:{{ student_profile.advisor_email }}">{{ student_profile.advisor_first }} {{ student_profile.advisor_last }}</a>
+                      {% if student_profile.advisor_phone %}<div class="small-note">{{ student_profile.advisor_phone }}</div>{% endif %}
+                    {% else %}
+                      Not assigned
+                    {% endif %}
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+            {% else %}
+            <table class="profile-table">
+              <tbody>
+                <tr><th>Name</th><td>{{ user_name }}</td></tr>
+                <tr><th>Email</th><td class="break">{{ user_email }}</td></tr>
+              </tbody>
+            </table>
+            {% endif %}
+
+            <div class="profile-actions">
+              <a href="/student/edit" class="btn">Edit Profile</a>
+            </div>
+          </aside>
+
+
+          <div class="actions-grid">
+            <div class="card action-card">
+              <h3>Manage Courses</h3>
+              <p>View and manage your enrolled courses.</p>
+              <a href="/student/courses" class="btn">Open</a>
+            </div>
+
+            <div class="card action-card">
+              <h3>Course Info</h3>
+              <p>See course details and schedules.</p>
+              <a href="/student/course-info" class="btn">Open</a>
+            </div>
+
+            <div class="card action-card">
+              <h3>Final Grade</h3>
+              <p>Check your final grades and transcripts.</p>
+              <a href="/student/grades" class="btn">Open</a>
+            </div>
+
+            <div class="card action-card">
+              <h3>Coming Soon</h3>
+              <p>Placeholder for another student action.</p>
+              <a href="#" class="btn">Open</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INSTRUCTOR DASHBOARD -->
+      {% elif user_type == 'instructor' %}
+      <section class="instructor-dashboard">
+        <h2>Instructor Portal</h2>
+        <div class="dashboard-grid">
+          
+        </div>
+      </section>
+
+      <!-- ADMIN DASHBOARD -->
+      {% elif user_type == 'admin' %}
+      <section class="admin-dashboard">
+        <h2>Admin Panel</h2>
+        <div class="dashboard-grid">
+          
+        </div>
+      </section>
+      {% endif %}
+
+      <div class="logout-container">
+        <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+      </div>
+    </main>
+  </body>
+</html>

@@ -89,6 +89,18 @@ INSERT INTO Section (sectionID, semester, year, courseID, instructorID, classroo
 (19, 'Spring', 2026, 6, 12, 8, 6, 30),
 (20, 'Spring', 2026, 15, 1, 2, 10, 25);
 
+-- sample advisors (one per department)
+INSERT INTO Advisor (advisorID, first_name, last_name, email, phone, departmentID) VALUES
+(1, 'Dr. Alice', 'Smith', 'alice.smith@university.edu', '555-1001', 1),
+(2, 'Dr. Carol', 'Lee',   'carol.lee@university.edu',  '555-1002', 2),
+(3, 'Dr. David', 'Kim',   'david.kim@university.edu',   '555-1003', 3),
+(4, 'Dr. Eva', 'Martinez', 'eva.martinez@university.edu', '555-1004', 4),
+(5, 'Dr. Frank', 'Brown', 'frank.brown@university.edu', '555-1005', 5),
+(6, 'Dr. Gina', 'Davis',  'gina.davis@university.edu',  '555-1006', 6),
+(7, 'Dr. Henry', 'Wilson','henry.wilson@university.edu', '555-1007', 7),
+(8, 'Dr. Irene', 'Clark', 'irene.clark@university.edu', '555-1008', 8);
+
+
 INSERT INTO Student (studentID, first_name, last_name, email, password, birth_date, year, term, standing, major) VALUES
 (1, 'Noah', 'Adams', 'noah.adams@student.university.edu', SHA2('studpass1',256), '2003-05-14', 2, 'Fall', 'Sophomore', 'Computer Science'),
 (2, 'Emma', 'Baker', 'emma.baker@student.university.edu', SHA2('studpass2',256), '2002-10-02', 3, 'Fall', 'Junior', 'Mathematics'),
@@ -182,3 +194,51 @@ INSERT INTO Enrollment (enrollmentID, studentID, sectionID, grade, status) VALUE
 (58, 18, 14, 'TBD', 'enrolled'),
 (59, 15, 13, 'TBD', 'enrolled'),
 (60, 19, 1, 'TBD', 'enrolled');
+
+
+-- temporarily allow updates without key-equality
+SET SQL_SAFE_UPDATES = 0;
+
+-- your per-department updates (paste all of them)
+UPDATE Student s
+JOIN Advisor a ON a.departmentID = 1
+SET s.advisorID = a.advisorID
+WHERE s.major = 'Computer Science';
+
+UPDATE Student s
+JOIN Advisor a ON a.departmentID = 2
+SET s.advisorID = a.advisorID
+WHERE s.major = 'Mathematics';
+
+UPDATE Student s
+JOIN Advisor a ON a.departmentID = 3
+SET s.advisorID = a.advisorID
+WHERE s.major = 'Physics';
+
+UPDATE Student s
+JOIN Advisor a ON a.departmentID = 4
+SET s.advisorID = a.advisorID
+WHERE s.major = 'English';
+
+UPDATE Student s
+JOIN Advisor a ON a.departmentID = 5
+SET s.advisorID = a.advisorID
+WHERE s.major = 'History';
+
+UPDATE Student s
+JOIN Advisor a ON a.departmentID = 6
+SET s.advisorID = a.advisorID
+WHERE s.major = 'Biology';
+
+UPDATE Student s
+JOIN Advisor a ON a.departmentID = 7
+SET s.advisorID = a.advisorID
+WHERE s.major = 'Chemistry';
+
+UPDATE Student s
+JOIN Advisor a ON a.departmentID = 8
+SET s.advisorID = a.advisorID
+WHERE s.major = 'Music';
+
+-- turn safe-updates back on
+SET SQL_SAFE_UPDATES = 1;
