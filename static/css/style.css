@@ -1,6 +1,9 @@
 :root{
-  --dark:#0e4f57; --teal:#178a97; --mint:#9ed6c9; --bg:#f6eadc;
-  --accent:#1b1210; --font:"JetBrains Mono", monospace;
+  --dark:#0e4f57; --teal:#178a97; --mint:#9ed6c9;
+  --bg:#f6eadc;
+  --salmon: #DB806B;
+  --custom-black:#1b1210; 
+  --font:"JetBrains Mono", monospace;
 }
 
 *{box-sizing:border-box}
@@ -19,12 +22,12 @@ html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font);over
   font-size:48px;color:#0b1a1a;text-shadow:0 2px 0 rgba(255,255,255,.15),0 4px 10px rgba(0,0,0,.1);
   z-index:10;pointer-events:none;
 }
-
+/*---------------------------------------------------------------------------------------------------*/
 /* portal pill under title */
 .tab-row{position:absolute;left:50%;bottom:-24px;transform:translateX(-50%);z-index:9;display:flex;justify-content:center}
 .portal-pill{
-  padding:8px 20px;border-radius:10px;background:var(--teal);
-  color:#fff;font-weight:700;letter-spacing:1px;box-shadow:0 6px 14px rgba(0,0,0,.08)
+  padding:8px 20px;border-radius:10px;background:var(--bg);border: 5px solid var(--custom-black);
+  color:var(--custom-black);font-weight:700;letter-spacing:1px;box-shadow:0 6px 14px rgba(0,0,0,.08)
 }
 
 /* page / dashboard */
@@ -36,7 +39,7 @@ html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font);over
 @media (max-width:1000px){.student-layout{grid-template-columns:1fr}}
 
 .profile-card, .card{
-  background:#fff;padding:16px;border-radius:8px;border:1px solid rgba(0,0,0,.06);
+  background:var(--bg);padding:16px;border-radius:10px;border: 5px solid var(--custom-black);
   box-shadow:0 6px 18px rgba(0,0,0,.06)
 }
 .profile-card{max-width:320px}
@@ -54,8 +57,8 @@ html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font);over
 .card h3{margin:0 0 8px}.card p{margin:0 0 12px;color:#333}
 
 /* buttons */
-.btn{display:inline-block;padding:8px 12px;background:var(--teal);color:#fff;text-decoration:none;border-radius:6px;font-weight:700}
-.btn:hover{opacity:.95}
+.btn{display:inline-block;padding:8px 12px;background:var(--salmon);color: var(--custom-black);border: 5px solid var(--custom-black);text-decoration:none;border-radius:10px;font-weight:700}
+.btn:hover{opacity:.90}
 
 
 /* Profile table layout */
@@ -63,7 +66,7 @@ html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font);over
   width:100%;
   border-collapse:collapse;
   border:1px solid rgba(0,0,0,0.08);
-  background:#fff;
+  background:var(--bg);
   border-radius:6px;
   overflow:hidden; /* keeps rounded corners */
   box-shadow: none;
@@ -134,8 +137,8 @@ html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font);over
 }
 
 /* subtle zebra */
-.grade-table tbody tr:nth-child(odd){ background: #fff; }
-.grade-table tbody tr:nth-child(even){ background: #fbfbfb; }
+.grade-table tbody tr:nth-child(odd){ background: var(--bg); }
+.grade-table tbody tr:nth-child(even){ background: var(--bg); }
 
 /* remove bottom border on last row */
 .grade-table tbody tr:last-child td{ border-bottom:0; }

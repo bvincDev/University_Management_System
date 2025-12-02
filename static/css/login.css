@@ -6,12 +6,12 @@
 }
 
 .content-box {
-    background: var(--page-bg);
+    background: var(--bg);
     padding: 20px;
     width: 500px;
     height: 60vh;
     border-radius: 10px;
-    border: 10px solid var(--custom-black);
+    border: 5px solid var(--custom-black);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -66,12 +66,12 @@
     margin-top: 45px;
     border: none;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    border: 5px solid var(--custom-black);
+    border-radius: 10px;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 #login:hover {
-    background-color: #e28577; 
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35); 
+    opacity: 0.90;
     transform: translateY(-2px); 
 }
