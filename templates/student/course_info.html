@@ -36,7 +36,7 @@
 
             <label style="flex:1;min-width:220px;">
               Search course:
-              <input name="q" type="search" placeholder="CS101 or Programming" value="{{ q or '' }}" style="width:100%">
+              <input name="q" type="search" placeholder="CS101 or Programming" value="{{ q or '' }}" style="width:100%; padding:5px;">
             </label>
 
             <button class="btn" type="submit">Search</button>
@@ -90,7 +90,7 @@
         </div>
       </section>
 
-      <div class="logout-container" style="margin-top:12px;">
+      <div class="logout-container" >
         <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
       </div>
     </main>
