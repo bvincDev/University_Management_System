@@ -1,6 +1,9 @@
 :root{
-  --dark:#0e4f57; --teal:#178a97; --mint:#9ed6c9; --bg:#f6eadc;
-  --accent:#1b1210; --font:"JetBrains Mono", monospace;
+  --dark:#0e4f57; --teal:#178a97; --mint:#9ed6c9;
+  --bg:#f6eadc;
+  --salmon: #DB806B;
+  --custom-black:#1b1210; 
+  --font:"JetBrains Mono", monospace;
 }
 
 *{box-sizing:border-box}
