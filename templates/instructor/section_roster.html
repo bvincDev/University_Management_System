@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Section Roster</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="stripe stripe-top"></div>
+      <div class="stripe stripe-mid"></div>
+      <div class="stripe stripe-large"></div>
+      <h1 class="site-title">University Manager</h1>
+      <div class="tab-row"><div class="portal-pill">Instructor Portal</div></div>
+    </header>
+
+    <main class="page-body">
+      <section class="student-dashboard">
+        <div class="student-layout">
+          <aside class="profile-card">
+            <h3>Section</h3>
+            <table class="profile-table">
+              <tbody>
+                <tr><th>Term</th><td>{{ section.semester }} {{ section.year }}</td></tr>
+                <tr><th>Course</th><td>{{ section.courseID }}</td></tr>
+              </tbody>
+            </table>
+            <div class="profile-actions">
+              <a href="{{ url_for('instructor_sections') }}" class="btn">Back to Sections</a>
+            </div>
+          </aside>
+
+          <div class="card" style="width:100%;">
+            <h3>Roster — {{ section.semester }} {{ section.year }}</h3>
+
+            {% if roster %}
+            <table class="grade-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Grade</th><th>Action</th></tr></thead>
+              <tbody>
+                {% for r in roster %}
+                <tr>
+                  <td data-label="Name">{{ r.last_name }}, {{ r.first_name }}</td>
+                  <td data-label="Email">{{ r.email }}</td>
+                  <td data-label="Status">{{ r.status }}</td>
+                  <td data-label="Grade">{{ r.grade }}</td>
+                  <td data-label="Action">
+                    <form method="post" action="{{ url_for('instructor_update_grade') }}" style="display:inline-flex;gap:8px;align-items:center;">
+                      <input type="hidden" name="enrollment_id" value="{{ r.enrollmentID }}">
+                      <input name="grade" value="{{ r.grade }}" size="5" aria-label="grade">
+                      <button class="btn" type="submit">Save</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+              <p>No students enrolled.</p>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

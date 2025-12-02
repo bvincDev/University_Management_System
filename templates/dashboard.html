@@ -1,12 +1,9 @@
-<!-- templates/index.html -->
 <!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>index</title>
-    <!-- JetBrains Mono (Bold) (font from the figma) -->
+    <title>Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
@@ -17,22 +14,27 @@
 
       <h1 class="site-title">University Manager</h1>
       <div class="tab-row">
-      <div class="portal-pill">Student Portal</div>
-    </div>
-
-
+        <div class="portal-pill">
+          {% if user_type == 'student' %}
+            Student Portal
+          {% elif user_type == 'instructor' %}
+            Instructor Portal
+          {% elif user_type == 'admin' %}
+            Admin Panel
+          {% else %}
+            Portal
+          {% endif %}
+        </div>
+      </div>
     </header>
 
     <main class="page-body">
-      
-
       <!-- STUDENT DASHBOARD -->
       {% if user_type == 'student' %}
       <section class="student-dashboard">
         <div class="student-layout">
           <aside class="profile-card">
             <h3>Profile</h3>
-
             {% if student_profile %}
             <table class="profile-table">
               <tbody>
@@ -44,7 +46,8 @@
                 <tr><th>Term</th><td>{{ student_profile.term }}</td></tr>
                 <tr><th>Standing</th><td>{{ student_profile.standing }}</td></tr>
                 <tr><th>Major</th><td>{{ student_profile.major }}</td></tr>
-                <tr><th>Advisor</th><td>
+                <tr><th>Advisor</th>
+                  <td>
                     {% if student_profile.advisorID %}
                       <a href="mailto:{{ student_profile.advisor_email }}">{{ student_profile.advisor_first }} {{ student_profile.advisor_last }}</a>
                       {% if student_profile.advisor_phone %}<div class="small-note">{{ student_profile.advisor_phone }}</div>{% endif %}
@@ -53,7 +56,6 @@
                     {% endif %}
                   </td>
                 </tr>
-
               </tbody>
             </table>
             {% else %}
@@ -64,12 +66,10 @@
               </tbody>
             </table>
             {% endif %}
-
             <div class="profile-actions">
               <a href="/student/edit" class="btn">Edit Profile</a>
             </div>
           </aside>
-
 
           <div class="actions-grid">
             <div class="card action-card">
@@ -89,36 +89,117 @@
               <p>Check your final grades and transcripts.</p>
               <a href="/student/grades" class="btn">Open</a>
             </div>
-
-            <div class="card action-card">
-              <h3>Coming Soon</h3>
-              <p>Placeholder for another student action.</p>
-              <a href="#" class="btn">Open</a>
-            </div>
           </div>
         </div>
       </section>
 
       <!-- INSTRUCTOR DASHBOARD -->
       {% elif user_type == 'instructor' %}
-      <section class="instructor-dashboard">
-        <h2>Instructor Portal</h2>
-        <div class="dashboard-grid">
-          
+      <section class="student-dashboard instructor-dashboard">
+        <div class="student-layout">
+          <aside class="profile-card">
+            <h3>Profile</h3>
+            <table class="profile-table">
+              <tbody>
+                <tr><th>Name</th><td>{{ user_name }}</td></tr>
+                <tr><th>Email</th><td class="break">{{ user_email }}</td></tr>
+              </tbody>
+            </table>
+            <div class="profile-actions">
+              <a href="/instructor/edit" class="btn">Edit Profile</a>
+            </div>
+          </aside>
+
+          <!-- Instructor main column: quick actions + live section list -->
+          <div style="width:100%;">
+            <div class="actions-grid" style="margin-bottom:18px">
+              <div class="card action-card">
+                <h3>My Sections</h3>
+                <p>View sections you teach (click a roster to submit grades).</p>
+                <a href="{{ url_for('instructor_sections') }}" class="btn">Open</a>
+              </div>
+
+              <div class="card action-card">
+                <h3>Gradebook</h3>
+                <p>Open gradebook for a consolidated view of your sections.</p>
+                <a href="{{ url_for('instructor_gradebook') }}" class="btn">Open</a>
+              </div>
+
+              <div class="card action-card">
+                <h3>Advisee Tools</h3>
+                <p>Manage advisees and quick reports (if assigned).</p>
+                <a href="{{ url_for('instructor_advisees') }}" class="btn">Open</a>
+              </div>
+
+              <div class="card action-card">
+                <h3>Section Roster</h3>
+                <p>Open any section below to view roster and submit grades.</p>
+                <a href="{{ url_for('instructor_sections') }}" class="btn">Open</a>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Your Sections</h3>
+
+              {% if my_sections and my_sections|length > 0 %}
+                <table class="grade-table">
+                  <thead>
+                    <tr>
+                      <th>Course</th><th>Term</th><th>Time</th><th>Room</th><th>Cap</th><th>Enrolled</th><th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for s in my_sections %}
+                    <tr>
+                      <td data-label="Course">{{ s.course_number }} — {{ s.course_name }}</td>
+                      <td data-label="Term">{{ s.semester }} {{ s.year }}</td>
+                      <td data-label="Time">{{ s.day_of_week or '' }} {{ s.start_time or '' }}–{{ s.end_time or '' }}</td>
+                      <td data-label="Room">{{ s.building_name or '' }} {{ s.room_number or '' }}</td>
+                      <td data-label="Cap">{{ s.capacity }}</td>
+                      <td data-label="Enrolled">{{ s.enrolled_count }}</td>
+                      <td data-label="">
+                        <a class="btn" href="{{ url_for('instructor_section_roster', section_id=s.sectionID) }}">Roster</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              {% else %}
+                <p>No sections found for you this term. <a href="{{ url_for('instructor_sections') }}">View all sections</a></p>
+              {% endif %}
+            </div>
+          </div>
         </div>
       </section>
 
       <!-- ADMIN DASHBOARD -->
       {% elif user_type == 'admin' %}
-      <section class="admin-dashboard">
-        <h2>Admin Panel</h2>
-        <div class="dashboard-grid">
-          
+      <section class="student-dashboard admin-dashboard">
+        <div class="student-layout">
+          <aside class="profile-card">
+            <h3>Admin</h3>
+            <table class="profile-table">
+              <tbody>
+                <tr><th>Name</th><td>{{ user_name }}</td></tr>
+                <tr><th>Email</th><td class="break">{{ user_email }}</td></tr>
+              </tbody>
+            </table>
+            <div class="profile-actions">
+              <a href="/admin" class="btn">Admin Panel</a>
+            </div>
+          </aside>
+
+          <div class="actions-grid">
+            <div class="card action-card"><h3>Manage Courses</h3><p>Full CRUD for courses.</p><a href="/admin/courses" class="btn">Open</a></div>
+            <div class="card action-card"><h3>Manage Sections</h3><p>Create/assign sections & instructors.</p><a href="/admin/sections" class="btn">Open</a></div>
+            <div class="card action-card"><h3>Users</h3><p>Manage instructors and students.</p><a href="/admin/users" class="btn">Open</a></div>
+            <div class="card action-card"><h3>Reports</h3><p>Export rosters and grades.</p><a href="/admin/reports" class="btn">Open</a></div>
+          </div>
         </div>
       </section>
       {% endif %}
 
-      <div class="logout-container">
+      <div class="logout-container" style="max-width:1200px;margin:18px auto;">
         <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
       </div>
     </main>

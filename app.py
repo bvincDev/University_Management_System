@@ -18,6 +18,11 @@ def verify_password(stored_password: str, provided_password: str) -> bool:
     if len(stored) == 64 and all(c in "0123456789abcdefABCDEF" for c in stored):
         provided_hash = hashlib.sha256(provided_password.encode('utf-8')).hexdigest()
         return provided_hash.lower() == stored.lower()
+    # If stored password is not a plain hex sha256, try werkzeug's check for salted hashes
+    try:
+        return bool(check_password_hash(stored, provided_password))
+    except Exception:
+        return False
     
 
 def get_user_by_email(email):
@@ -112,21 +117,31 @@ def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('index', error="Please sign in to continue."))
 
-    # dashboard page
-    # If student, fetch profile to template
+    user_type = session.get('user_type')
     student_profile = None
-    if session.get('user_type') == 'student':
+    instructor_sections = None
+
+    # student: load profile
+    if user_type == 'student':
         try:
-            student_profile = get_student_profile(session.get('user_id')) # get the user profile from their ID
+            student_profile = get_student_profile(session.get('user_id'))
         except Exception:
             student_profile = None
+
+    # instructor: load sections taught (most recent first)
+    if user_type == 'instructor':
+        try:
+            instructor_sections = get_instructor_sections(session.get('user_id'))
+        except Exception:
+            instructor_sections = []
 
     return render_template(
         'dashboard.html',
         user_name=session.get('user_name'),
         user_email=session.get('user_email'),
-        user_type=session.get('user_type'),
+        user_type=user_type,
         student_profile=student_profile,
+        my_sections=instructor_sections
     )
 
 
@@ -356,7 +371,6 @@ def student_register():
     return redirect(url_for('student_courses'))
 
 
-
 @app.route('/student/edit', methods=['GET', 'POST'])
 def student_edit():
     if 'user_id' not in session or session.get('user_type') != 'student':
@@ -405,6 +419,229 @@ def student_edit():
         conn.close()
 
     return redirect(url_for('dashboard'))
+
+
+# --- Instructor helpers ---
+def get_instructor_sections(instr_id, semester=None, year=None):
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        sql = """
+            SELECT
+              s.sectionID, s.semester, s.year, s.capacity,
+              c.courseID, c.course_name, c.course_number, c.credits,
+              (SELECT COUNT(*) FROM Enrollment e WHERE e.sectionID = s.sectionID AND e.status='enrolled') AS enrolled_count,
+              t.day_of_week, TIME_FORMAT(t.start_time, '%%H:%%i') AS start_time,
+              TIME_FORMAT(t.end_time, '%%H:%%i') AS end_time,
+              cl.room_number, b.building_name
+            FROM Section s
+            JOIN Course c ON s.courseID = c.courseID
+            LEFT JOIN Timeslot t ON s.timeslotID = t.timeslotID
+            LEFT JOIN Classroom cl ON s.classroomID = cl.classroomID
+            LEFT JOIN Building b ON cl.buildingID = b.buildingID
+            WHERE s.instructorID = %s
+        """
+        params = [instr_id]
+        if semester:
+            sql += " AND s.semester = %s"
+            params.append(semester)
+        if year:
+            sql += " AND s.year = %s"
+            params.append(year)
+        sql += " ORDER BY s.year DESC, s.semester DESC, c.course_number"
+        cur.execute(sql, tuple(params))
+        return cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+
+def get_section_roster(section_id):
+    """Return roster for a section with enrollment info."""
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("""
+            SELECT e.enrollmentID, e.grade, e.status,
+                   s.sectionID, s.semester, s.year,
+                   st.studentID, st.first_name, st.last_name, st.email
+            FROM Enrollment e
+            JOIN Student st ON e.studentID = st.studentID
+            JOIN Section s ON e.sectionID = s.sectionID
+            WHERE e.sectionID = %s
+            ORDER BY st.last_name, st.first_name
+        """, (section_id,))
+        return cur.fetchall()
+    finally:
+        cur.close()
+        conn.close()
+
+
+# --- Instructor routes ---
+
+@app.route('/instructor/sections', methods=['GET'])
+def instructor_sections():
+    if 'user_id' not in session or session.get('user_type') != 'instructor':
+        return redirect(url_for('index'))
+
+    instr_id = session['user_id']
+    semester = request.args.get('semester') or None
+    year = request.args.get('year') or None
+
+    sections = get_instructor_sections(instr_id, semester=semester, year=year)
+    return render_template('instructor/sections.html',
+                           sections=sections,
+                           semester=semester, year=year,
+                           user_name=session.get('user_name'))
+
+
+@app.route('/instructor/section/<int:section_id>', methods=['GET'])
+def instructor_section_roster(section_id):
+    # ensure logged in instructor teaches this section
+    if 'user_id' not in session or session.get('user_type') != 'instructor':
+        return redirect(url_for('index'))
+
+    instr_id = session['user_id']
+    # verify instructor owns the section
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT instructorID, courseID, semester, year FROM Section WHERE sectionID=%s", (section_id,))
+        sec = cur.fetchone()
+        if not sec or sec['instructorID'] != instr_id:
+            return redirect(url_for('instructor_sections'))
+    finally:
+        cur.close()
+        conn.close()
+
+    roster = get_section_roster(section_id)
+    return render_template('instructor/section_roster.html',
+                           roster=roster,
+                           section=sec,
+                           user_name=session.get('user_name'))
+
+
+@app.route('/instructor/update-grade', methods=['POST'])
+def instructor_update_grade():
+    if 'user_id' not in session or session.get('user_type') != 'instructor':
+        return redirect(url_for('index'))
+
+    instr_id = session['user_id']
+    enrollment_id = request.form.get('enrollment_id')
+    new_grade = request.form.get('grade', '').strip()
+
+    if not enrollment_id or new_grade == '':
+        return redirect(url_for('instructor_sections'))
+
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor(dictionary=True)
+        # find section for this enrollment and ensure instructor owns it
+        cur.execute("""
+            SELECT s.sectionID, s.instructorID
+            FROM Enrollment e
+            JOIN Section s ON e.sectionID = s.sectionID
+            WHERE e.enrollmentID = %s
+        """, (enrollment_id,))
+        row = cur.fetchone()
+        if not row or row['instructorID'] != instr_id:
+            cur.close()
+            conn.close()
+            return redirect(url_for('instructor_sections'))
+
+        # update grade (and mark status completed if desired)
+        cur.execute("UPDATE Enrollment SET grade=%s WHERE enrollmentID=%s", (new_grade, enrollment_id))
+        conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+    return redirect(url_for('instructor_section_roster', section_id=row['sectionID']))
+
+
+@app.route('/instructor/edit', methods=['GET', 'POST'])
+def instructor_edit():
+    if 'user_id' not in session or session.get('user_type') != 'instructor':
+        return redirect(url_for('index'))
+
+    instr_id = session['user_id']
+
+    if request.method == 'GET':
+        conn = config.get_db_connection()
+        try:
+            cur = conn.cursor(dictionary=True)
+            cur.execute("SELECT instructorID AS id, first_name, last_name, email, birth_date FROM Instructor WHERE instructorID=%s", (instr_id,))
+            profile = cur.fetchone()
+        finally:
+            cur.close()
+            conn.close()
+        return render_template('instructor/edit_profile.html', instructor=profile, user_name=session.get('user_name'))
+
+    # POST -> update allowed fields (first_name, last_name, birth_date, password)
+    first_name = request.form.get('first_name', '').strip()
+    last_name = request.form.get('last_name', '').strip()
+    birth_date = request.form.get('birth_date') or None
+    new_password = request.form.get('password', '').strip()
+
+    if not first_name or not last_name:
+        conn = config.get_db_connection()
+        try:
+            cur = conn.cursor(dictionary=True)
+            cur.execute("SELECT instructorID AS id, first_name, last_name, email, birth_date FROM Instructor WHERE instructorID=%s", (instr_id,))
+            profile = cur.fetchone()
+        finally:
+            cur.close()
+            conn.close()
+        return render_template('instructor/edit_profile.html', instructor=profile, error="First and last name required.")
+
+    conn = config.get_db_connection()
+    try:
+        cur = conn.cursor()
+        sql_parts = ["first_name = %s", "last_name = %s", "birth_date = %s"]
+        params = [first_name, last_name, birth_date]
+        if new_password:
+            hashed = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+            sql_parts.append("password = %s")
+            params.append(hashed)
+        params.append(instr_id)
+        sql = f"UPDATE Instructor SET {', '.join(sql_parts)} WHERE instructorID = %s"
+        cur.execute(sql, tuple(params))
+        conn.commit()
+        # update session name
+        session['user_name'] = f"{first_name} {last_name}".strip()
+    finally:
+        cur.close()
+        conn.close()
+
+    return redirect(url_for('dashboard'))
+
+@app.route('/instructor/gradebook')
+def instructor_gradebook():
+    if 'user_id' not in session or session.get('user_type') != 'instructor':
+        return redirect(url_for('index'))
+
+    instr_id = session['user_id']
+    # reuse helper to list sections
+    sections = get_instructor_sections(instr_id)
+    return render_template(
+        'instructor/gradebook.html',
+        sections=sections,
+        user_name=session.get('user_name'),
+        user_email=session.get('user_email')
+    )
+
+@app.route('/instructor/advisees')
+def instructor_advisees():
+    # Note: your schema has a separate Advisor table. This page is a placeholder
+    # where you can later implement "add students as advisor" functionality.
+    if 'user_id' not in session or session.get('user_type') != 'instructor':
+        return redirect(url_for('index'))
+
+    # For now show an empty advisee list (or message)
+    return render_template(
+        'instructor/advisees.html',
+        user_name=session.get('user_name'),
+        user_email=session.get('user_email')
+    )
 
 @app.route('/logout')
 def logout():
