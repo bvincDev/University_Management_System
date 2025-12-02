@@ -1,9 +1,11 @@
 :root{
-  --dark-strip: #0e4f57;    /* thin dark bar at very top */
-  --teal-strip: #178a97;    /* middle darker teal */
-  --mint-area: #9ed6c9;     /* large strip behind title */
-  --page-bg: #f6eadc;       /* pale cream page background */
-  --accent-border: #1b1210; /* button border */
+  --dark-strip: #0e4f57;   
+  --teal-strip: #178a97;    
+  --mint-area: #9ed6c9;     
+  --page-bg: #f6eadc;       
+  --custom-black: #1b1210; 
+  --foot-strip: #FEE3AC;
+  --salmon: #DB806B;
   --font: 'JetBrains Mono', monospace;
 }
 
@@ -25,9 +27,9 @@ html,body{
 }
 
 .stripe{ width:100%; display:block; }
-.stripe-top{ height:20px; background:var(--dark-strip); box-shadow: inset 0 -3px rgba(0,0,0,0.05); }
-.stripe-mid{ height:40px; background:var(--teal-strip); border-bottom:4px solid rgba(0,0,0,0.04); }
-.stripe-large{ height:100px; background:var(--mint-area); border-top:6px solid rgba(0,0,0,0.02); }
+.stripe-top{ height:20px; background:var(--dark-strip); /*box-shadow: inset 0 -3px rgba(0,0,0,0.05);*/ }
+.stripe-mid{ height:40px; background:var(--teal-strip); /*border-bottom:4px solid rgba(0,0,0,0.04);*/ }
+.stripe-large{ height:100px; background:var(--mint-area); /*border-top:6px solid rgba(0,0,0,0.02);*/ }
 
 .site-title{
   position:absolute;
@@ -38,44 +40,17 @@ html,body{
   padding:0;
   font-family:var(--font);
   font-weight:700;
-  letter-spacing:6px;
+  letter-spacing:2px;
   text-transform:uppercase;
-  font-size:48px;
-  color:#0b1a1a;
-  -webkit-font-smoothing:antialiased;
-  text-shadow: 0 2px 0 rgba(255,255,255,0.15),
-               0 4px 10px rgba(0,0,0,0.1);
+  font-size:60px;
+  color: (--custom-black);
   z-index:10;
   background:transparent;
   pointer-events:none;
 }
 
-.tab-row{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:-22px;
-  display:flex;
-  gap:18px;
-  justify-content:center;
-  align-items:center;
-  z-index:8;
-}
 
-
-.tab{
-  font-family:var(--font);
-  font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  background:var(--page-bg);
-  border:3px solid var(--accent-border);
-  padding:10px 28px;
-  min-width:90px;
-  height:38px;
-  cursor:pointer;
-  box-shadow: 0 8px 0 rgba(0,0,0,0.06);
-  outline:none;
-  transition:transform .12s ease, box-shadow .12s ease;
-  border-radius:2px;
-}
+/*.strip-bottom{
+  height:40px;
+  background:var(--foot-strip);
+}*/
