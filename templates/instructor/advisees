@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Advisees</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header"><div class="stripe stripe-top"></div><div class="stripe stripe-mid"></div><div class="stripe stripe-large"></div><h1 class="site-title">University Manager</h1><div class="tab-row"><div class="portal-pill">Instructor Portal</div></div></header>
+
+  <main class="page-body">
+    <div style="max-width:1200px;margin:0 auto;padding-top:6px;">
+      <h2>Your Advisees</h2>
+
+      <div class="card" style="margin-bottom:12px;">
+        <h3>Assign Yourself as Advisor to a Student</h3>
+        <form method="post" action="{{ url_for('instructor_assign_advisor') }}">
+          <label>Student Email or ID: <input type="text" name="student_identifier" placeholder="email or studentID"></label>
+          <button class="btn" type="submit">Assign</button>
+        </form>
+      </div>
+
+      {% if advisees %}
+        <table class="grade-table">
+          <thead><tr><th>Student</th><th>Email</th><th>Major</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for s in advisees %}
+            <tr>
+              <td>{{ s.first_name }} {{ s.last_name }}</td>
+              <td class="break">{{ s.email }}</td>
+              <td>{{ s.major }}</td>
+              <td>
+                <form method="post" action="{{ url_for('instructor_unassign_advisor') }}">
+                  <input type="hidden" name="student_id" value="{{ s.studentID }}">
+                  <button class="btn" type="submit" onclick="return confirm('Remove yourself as advisor?')">Remove Advisor</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>You do not currently advise any students.</p>
+      {% endif %}
+
+      <div style="margin-top:12px;"><a href="{{ url_for('dashboard') }}" class="btn">Back</a></div>
+    </div>
+  </main>
+</body>
+</html>
